@@ -39,11 +39,11 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import mods.battlegear2.Battlegear;
+import mods.battlegear2.Offhand;
 import mods.battlegear2.api.EnchantmentHelper;
 import mods.battlegear2.api.IDyable;
 import mods.battlegear2.api.RenderItemBarEvent;
 import mods.battlegear2.api.core.IBattlePlayer;
-import mods.battlegear2.api.core.IInventoryPlayerBattle;
 import mods.battlegear2.api.quiver.IArrowContainer2;
 import mods.battlegear2.api.quiver.QuiverArrowRegistry;
 import mods.battlegear2.api.weapons.IBackStabbable;
@@ -131,7 +131,7 @@ public final class BattlegearClientEvents {
     public void renderPlayerLeftItemUsage(RenderLivingEvent.Pre event) {
         if (event.entity instanceof EntityPlayer) {
             EntityPlayer entityPlayer = (EntityPlayer) event.entity;
-            ItemStack offhand = ((IInventoryPlayerBattle) entityPlayer.inventory).battlegear2$getCurrentOffhandWeapon();
+            ItemStack offhand = Offhand.getOffhandStack(entityPlayer);
             if (offhand != null && event.renderer instanceof RenderPlayer) {
                 RenderPlayer renderer = ((RenderPlayer) event.renderer);
                 renderer.modelArmorChestplate.heldItemLeft = renderer.modelArmor.heldItemLeft = renderer.modelBipedMain.heldItemLeft = 1;

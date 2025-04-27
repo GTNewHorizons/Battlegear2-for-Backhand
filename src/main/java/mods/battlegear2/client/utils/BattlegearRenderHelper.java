@@ -33,6 +33,7 @@ import net.minecraftforge.client.event.RenderPlayerEvent;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import mods.battlegear2.Offhand;
 import mods.battlegear2.api.IBackSheathedRender;
 import mods.battlegear2.api.ISheathed;
 import mods.battlegear2.api.RenderPlayerEventChild.PlayerElementType;
@@ -404,8 +405,7 @@ public final class BattlegearRenderHelper {
             float offhandSwing = 0.0F;
 
             if (player.battlegear2$isBattlemode()) {
-                ItemStack offhand = ((IInventoryPlayerBattle) ((EntityPlayer) entity).inventory)
-                        .battlegear2$getCurrentOffhandWeapon();
+                ItemStack offhand = Offhand.getOffhandStack(((EntityPlayer) entity));
                 if (offhand != null && offhand.getItem() instanceof IShield) {
                     offhandSwing = (float) player.battlegear2$getSpecialActionTimer()
                             / (float) ((IShield) offhand.getItem()).getBashTimer(offhand);
@@ -444,7 +444,7 @@ public final class BattlegearRenderHelper {
 
     public static void renderItemIn3rdPerson(EntityPlayer par1EntityPlayer, ModelBiped modelBipedMain, float frame) {
 
-        ItemStack var21 = ((IInventoryPlayerBattle) par1EntityPlayer.inventory).battlegear2$getCurrentOffhandWeapon();
+        ItemStack var21 = Offhand.getOffhandStack(par1EntityPlayer);
 
         if (var21 != null) {
 

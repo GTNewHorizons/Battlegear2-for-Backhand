@@ -9,9 +9,9 @@ import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import mods.battlegear2.Offhand;
 import mods.battlegear2.api.RenderPlayerEventChild;
 import mods.battlegear2.api.core.BattlegearUtils;
-import mods.battlegear2.api.core.IInventoryPlayerBattle;
 
 public final class BattlegearClientUtils {
 
@@ -25,7 +25,7 @@ public final class BattlegearClientUtils {
     public static boolean entityOtherPlayerIsItemInUseHook(EntityOtherPlayerMP player, boolean isItemInUse) {
         ItemStack itemStack = player.getCurrentEquippedItem();
         if (BattlegearUtils.isPlayerInBattlemode(player)) {
-            ItemStack offhand = ((IInventoryPlayerBattle) player.inventory).battlegear2$getCurrentOffhandWeapon();
+            ItemStack offhand = Offhand.getOffhandStack(player);
             if (offhand != null && BattlegearUtils.usagePriorAttack(offhand, player, true)) itemStack = offhand;
         }
         if (!isItemInUse && player.isEating() && itemStack != null) {

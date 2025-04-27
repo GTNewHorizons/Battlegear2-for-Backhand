@@ -43,6 +43,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 
 import cpw.mods.fml.common.eventhandler.EventBus;
+import mods.battlegear2.Offhand;
 import mods.battlegear2.api.IAllowItem;
 import mods.battlegear2.api.IOffhandDual;
 import mods.battlegear2.api.IOffhandWield;
@@ -90,7 +91,7 @@ public class BattlegearUtils {
      * Helper method to check if player can use {@link IShield}
      */
     public static boolean canBlockWithShield(EntityPlayer player) {
-        ItemStack offhand = ((IInventoryPlayerBattle) player.inventory).battlegear2$getCurrentOffhandWeapon();
+        ItemStack offhand = Offhand.getOffhandStack(player);
         return offhand != null && offhand.getItem() instanceof IShield;
     }
 
@@ -606,8 +607,7 @@ public class BattlegearUtils {
                 refreshAttributes(entityPlayer, true);
             }
             if (!itemInteract && BattlegearUtils.isPlayerInBattlemode(entityPlayer)) {
-                ItemStack offhandItem = ((IInventoryPlayerBattle) event.entityPlayer.inventory)
-                        .battlegear2$getCurrentOffhandWeapon();
+                ItemStack offhandItem = Offhand.getOffhandStack(event.entityPlayer);
                 PlayerEventChild.OffhandAttackEvent offAttackEvent = new PlayerEventChild.OffhandAttackEvent(
                         event,
                         offhandItem);
@@ -736,14 +736,13 @@ public class BattlegearUtils {
                     } else {
                         setPlayerCurrentItem(entityPlayer, result);
                     }
-                } else if (itemInUse
-                        == ((IInventoryPlayerBattle) entityPlayer.inventory).battlegear2$getCurrentOffhandWeapon()) {
-                            if (result != null && result.stackSize == 0) {
-                                setPlayerOffhandItem(entityPlayer, null);
-                            } else {
-                                setPlayerOffhandItem(entityPlayer, result);
-                            }
-                        }
+                } else if (itemInUse == Offhand.getOffhandStack(entityPlayer)) {
+                    if (result != null && result.stackSize == 0) {
+                        setPlayerOffhandItem(entityPlayer, null);
+                    } else {
+                        setPlayerOffhandItem(entityPlayer, result);
+                    }
+                }
             }
             // Reset stuff so that vanilla doesn't do anything
             entityPlayer.clearItemInUse();
@@ -761,8 +760,7 @@ public class BattlegearUtils {
      */
     public static ItemStack getCurrentItemOnUpdate(EntityPlayer entityPlayer, ItemStack itemInUse) {
         if (isPlayerInBattlemode(entityPlayer)) {
-            ItemStack itemStack = ((IInventoryPlayerBattle) entityPlayer.inventory)
-                    .battlegear2$getCurrentOffhandWeapon();
+            ItemStack itemStack = Offhand.getOffhandStack(entityPlayer);
             if (itemInUse == itemStack) {
                 return itemStack;
             }
@@ -780,7 +778,7 @@ public class BattlegearUtils {
         if (itemStack == entityPlayer.getCurrentEquippedItem()) {
             entityPlayer.destroyCurrentEquippedItem();
         } else {
-            ItemStack orig = ((IInventoryPlayerBattle) entityPlayer.inventory).battlegear2$getCurrentOffhandWeapon();
+            ItemStack orig = Offhand.getOffhandStack(entityPlayer);
             if (orig == itemStack) {
                 setPlayerOffhandItem(entityPlayer, null);
                 ForgeEventFactory.onPlayerDestroyItem(entityPlayer, orig);

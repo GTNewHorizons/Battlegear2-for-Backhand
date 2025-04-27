@@ -15,9 +15,9 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
+import mods.battlegear2.Offhand;
 import mods.battlegear2.api.core.BattlegearUtils;
 import mods.battlegear2.api.core.IBattlePlayer;
-import mods.battlegear2.api.core.IInventoryPlayerBattle;
 
 @Mixin(EntityPlayer.class)
 public abstract class MixinEntityPlayer extends EntityLivingBase implements IBattlePlayer {
@@ -74,8 +74,9 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IBat
                     value = "INVOKE",
                     target = "Lnet/minecraft/entity/player/InventoryPlayer;getCurrentItem()Lnet/minecraft/item/ItemStack;"))
     private ItemStack battlegear2$onUpdate$getCurrentItem(ItemStack currentItemStack) {
-        if (BattlegearUtils.isPlayerInBattlemode((EntityPlayer) (Object) this)) {
-            ItemStack itemStack = ((IInventoryPlayerBattle) this.inventory).battlegear2$getCurrentOffhandWeapon();
+        EntityPlayer player = (EntityPlayer) (Object) this;
+        if (BattlegearUtils.isPlayerInBattlemode(player)) {
+            ItemStack itemStack = Offhand.getOffhandStack(player);
             if (itemInUse == itemStack) {
                 return itemStack;
             }

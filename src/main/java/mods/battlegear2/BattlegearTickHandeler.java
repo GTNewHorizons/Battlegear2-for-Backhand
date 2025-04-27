@@ -54,7 +54,7 @@ public final class BattlegearTickHandeler {
         if (timer > 0) {
             ((IBattlePlayer) entityPlayer).battlegear2$setSpecialActionTimer(timer - 1);
             int targetTime = -1;
-            ItemStack offhand = ((IInventoryPlayerBattle) entityPlayer.inventory).battlegear2$getCurrentOffhandWeapon();
+            ItemStack offhand = Offhand.getOffhandStack(entityPlayer);
             if (offhand != null && offhand.getItem() instanceof IShield) {
                 targetTime = ((IShield) offhand.getItem()).getBashTimer(offhand) / 2;
             } else {
