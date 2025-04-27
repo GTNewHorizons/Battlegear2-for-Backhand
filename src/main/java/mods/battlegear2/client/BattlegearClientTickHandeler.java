@@ -149,7 +149,7 @@ public final class BattlegearClientTickHandeler {
     }
 
     private void tickStart(EntityPlayer player) {
-        if (((IBattlePlayer) player).battlegear2$isBattlemode()) {
+        if (Offhand.isOffhandVisible((IBattlePlayer) player)) {
             ItemStack offhand = Offhand.getOffhandStack(player);
             if (offhand != null) {
                 if (offhand.getItem() instanceof IShield) {
