@@ -3,6 +3,7 @@ package mods.battlegear2.client.utils;
 import static net.minecraftforge.client.IItemRenderer.ItemRenderType.EQUIPPED;
 import static net.minecraftforge.client.IItemRenderer.ItemRendererHelper.BLOCK_3D;
 
+import cpw.mods.fml.common.Loader;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
@@ -179,7 +180,7 @@ public final class BattlegearRenderHelper {
                                     offhandRender.battlegear2$getOffHandItemToRender()));
                     GL11.glPopMatrix();
 
-                } else {
+                } else if (!Loader.isModLoaded("backhand")) {
                     GL11.glPushMatrix();
 
                     if (player.getItemInUseCount() > 0) {
@@ -364,7 +365,7 @@ public final class BattlegearRenderHelper {
         EntityPlayer player = mc.thePlayer;
         ItemStack offhandStack = ((IBattlePlayer) player).battlegear2$isBattlemode()
                 ? player.inventory.getStackInSlot(slot)
-                : dummyStack;
+                : (Offhand.isOffhandSlot(slot - IInventoryPlayerBattle.WEAPON_SETS, player) ? Offhand.getOffhandStack(player) : dummyStack);
 
         boolean sameItem = offhandRender.battlegear2$getEquippedItemOffhandSlot() == slot
                 && offhandStack == offhandRender.battlegear2$getOffHandItemToRender();
@@ -402,16 +403,17 @@ public final class BattlegearRenderHelper {
 
     public static void moveOffHandArm(Entity entity, ModelBiped biped, float frame) {
         if (entity instanceof IBattlePlayer) {
-            IBattlePlayer player = (IBattlePlayer) entity;
+            IBattlePlayer battlePlayer = (IBattlePlayer) entity;
+            EntityPlayer player = (EntityPlayer) entity;
             float offhandSwing = 0.0F;
 
-            if (player.battlegear2$isBattlemode()) {
-                ItemStack offhand = Offhand.getOffhandStack(((EntityPlayer) entity));
+            if (Offhand.isOffhandVisible(player)) {
+                ItemStack offhand = Offhand.getOffhandStack(player);
                 if (offhand != null && offhand.getItem() instanceof IShield) {
-                    offhandSwing = (float) player.battlegear2$getSpecialActionTimer()
+                    offhandSwing = (float) battlePlayer.battlegear2$getSpecialActionTimer()
                             / (float) ((IShield) offhand.getItem()).getBashTimer(offhand);
                 } else {
-                    offhandSwing = player.battlegear2$getOffSwingProgress(frame);
+                    offhandSwing = battlePlayer.battlegear2$getOffSwingProgress(frame);
                 }
             }
 

@@ -85,7 +85,7 @@ public final class BattlegearClientTickHandeler {
                                     .generatePacket();
                             Battlegear.packetHandler.sendPacketToServer(p);
                             ((IBattlePlayer) player).battlegear2$setSpecialActionTimer(2);
-                        } else if (((IBattlePlayer) player).battlegear2$isBattlemode()) {
+                        } else if (Offhand.isOffhandVisible(player)) {
                             ItemStack offhand = Offhand.getOffhandStack(player);
 
                             if (offhand != null && offhand.getItem() instanceof IShield) {
@@ -149,7 +149,7 @@ public final class BattlegearClientTickHandeler {
     }
 
     private void tickStart(EntityPlayer player) {
-        if (Offhand.isOffhandVisible((IBattlePlayer) player)) {
+        if (Offhand.isOffhandVisible(player)) {
             ItemStack offhand = Offhand.getOffhandStack(player);
             if (offhand != null) {
                 if (offhand.getItem() instanceof IShield) {
