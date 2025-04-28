@@ -361,22 +361,23 @@ public final class BattlegearRenderHelper {
         offhandRender
                 .battlegear2$setPrevEquippedOffHandProgress(offhandRender.battlegear2$getEquippedOffHandProgress());
         int slot = mc.thePlayer.inventory.currentItem + IInventoryPlayerBattle.WEAPON_SETS;
-        EntityPlayer var1 = mc.thePlayer;
-        ItemStack var2 = ((IBattlePlayer) var1).battlegear2$isBattlemode() ? var1.inventory.getStackInSlot(slot)
+        EntityPlayer player = mc.thePlayer;
+        ItemStack offhandStack = ((IBattlePlayer) player).battlegear2$isBattlemode()
+                ? player.inventory.getStackInSlot(slot)
                 : dummyStack;
 
         boolean sameItem = offhandRender.battlegear2$getEquippedItemOffhandSlot() == slot
-                && var2 == offhandRender.battlegear2$getOffHandItemToRender();
+                && offhandStack == offhandRender.battlegear2$getOffHandItemToRender();
 
-        if (offhandRender.battlegear2$getOffHandItemToRender() == null && var2 == null) {
+        if (offhandRender.battlegear2$getOffHandItemToRender() == null && offhandStack == null) {
             sameItem = true;
         }
 
-        if (var2 != null && offhandRender.battlegear2$getOffHandItemToRender() != null
-                && var2 != offhandRender.battlegear2$getOffHandItemToRender()
-                && var2.getItem() == offhandRender.battlegear2$getOffHandItemToRender().getItem()
-                && var2.getItemDamage() == offhandRender.battlegear2$getOffHandItemToRender().getItemDamage()) {
-            offhandRender.battlegear2$setOffHandItemToRender(var2);
+        if (offhandStack != null && offhandRender.battlegear2$getOffHandItemToRender() != null
+                && offhandStack != offhandRender.battlegear2$getOffHandItemToRender()
+                && offhandStack.getItem() == offhandRender.battlegear2$getOffHandItemToRender().getItem()
+                && offhandStack.getItemDamage() == offhandRender.battlegear2$getOffHandItemToRender().getItemDamage()) {
+            offhandRender.battlegear2$setOffHandItemToRender(offhandStack);
             sameItem = true;
         }
 
@@ -394,7 +395,7 @@ public final class BattlegearRenderHelper {
                 offhandRender.battlegear2$getEquippedOffHandProgress() + increment);
 
         if (offhandRender.battlegear2$getEquippedOffHandProgress() < 0.1F) {
-            offhandRender.battlegear2$setOffHandItemToRender(var2);
+            offhandRender.battlegear2$setOffHandItemToRender(offhandStack);
             offhandRender.battlegear2$serEquippedItemOffhandSlot(slot);
         }
     }
