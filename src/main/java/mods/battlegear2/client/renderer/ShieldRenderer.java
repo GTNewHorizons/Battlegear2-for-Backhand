@@ -10,6 +10,7 @@ import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
+import cpw.mods.fml.common.Loader;
 import mods.battlegear2.client.utils.BattlegearRenderHelper;
 import mods.battlegear2.items.ItemShield;
 
@@ -92,8 +93,11 @@ public class ShieldRenderer implements IItemRenderer {
                 if (item.hasEffect(0)) BattlegearRenderHelper.renderEnchantmentEffects(tessellator);
 
                 break;
-            case EQUIPPED:
             case EQUIPPED_FIRST_PERSON:
+                if (Loader.isModLoaded("backhand")) {
+                    break;
+                }
+            case EQUIPPED:
                 GL11.glColor3f(red, green, blue);
                 ItemRenderer.renderItemIn2D(
                         tessellator,

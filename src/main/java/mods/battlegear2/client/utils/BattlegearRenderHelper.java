@@ -3,7 +3,6 @@ package mods.battlegear2.client.utils;
 import static net.minecraftforge.client.IItemRenderer.ItemRenderType.EQUIPPED;
 import static net.minecraftforge.client.IItemRenderer.ItemRendererHelper.BLOCK_3D;
 
-import cpw.mods.fml.common.Loader;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
@@ -34,6 +33,7 @@ import net.minecraftforge.client.event.RenderPlayerEvent;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import cpw.mods.fml.common.Loader;
 import mods.battlegear2.Offhand;
 import mods.battlegear2.api.IBackSheathedRender;
 import mods.battlegear2.api.ISheathed;
@@ -83,7 +83,10 @@ public final class BattlegearRenderHelper {
     }
 
     public static void renderItemInFirstPerson(float frame, Minecraft mc, ItemRenderer itemRenderer) {
-
+        if (Loader.isModLoaded("backhand")) {
+            GL11.glPopMatrix();
+            GL11.glCullFace(GL11.GL_BACK);
+        }
         if (dummyEntity == null) {
             dummyEntity = new EntityChicken(mc.theWorld);
         }
@@ -355,6 +358,9 @@ public final class BattlegearRenderHelper {
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
             RenderHelper.disableStandardItemLighting();
         }
+        if (Loader.isModLoaded("backhand")) {
+            GL11.glPushMatrix();
+        }
     }
 
     public static void updateEquippedItem(ItemRenderer itemRenderer, Minecraft mc) {
@@ -365,7 +371,9 @@ public final class BattlegearRenderHelper {
         EntityPlayer player = mc.thePlayer;
         ItemStack offhandStack = ((IBattlePlayer) player).battlegear2$isBattlemode()
                 ? player.inventory.getStackInSlot(slot)
-                : (Offhand.isOffhandSlot(slot - IInventoryPlayerBattle.WEAPON_SETS, player) ? Offhand.getOffhandStack(player) : dummyStack);
+                : (Offhand.isOffhandSlot(slot - IInventoryPlayerBattle.WEAPON_SETS, player)
+                        ? Offhand.getOffhandStack(player)
+                        : dummyStack);
 
         boolean sameItem = offhandRender.battlegear2$getEquippedItemOffhandSlot() == slot
                 && offhandStack == offhandRender.battlegear2$getOffHandItemToRender();
