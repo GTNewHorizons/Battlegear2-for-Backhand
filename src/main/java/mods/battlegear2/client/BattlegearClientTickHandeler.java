@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -60,8 +61,8 @@ public final class BattlegearClientTickHandeler {
     public static final BattlegearClientTickHandeler INSTANCE = new BattlegearClientTickHandeler();
 
     private BattlegearClientTickHandeler() {
-        drawWeapons = new KeyBinding("Draw Weapons", Keyboard.KEY_G, "key.categories.battlegear");
-        special = new KeyBinding("Special", Keyboard.KEY_NONE, "key.categories.battlegear");
+        drawWeapons = new KeyBinding(I18n.format("key.drawWeapons"), Keyboard.KEY_G, "key.categories.battlegear");
+        special = new KeyBinding(I18n.format("key.special"), Keyboard.KEY_NONE, "key.categories.battlegear");
         ClientRegistry.registerKeyBinding(drawWeapons);
         ClientRegistry.registerKeyBinding(special);
         mc = FMLClientHandler.instance().getClient();

@@ -1,6 +1,7 @@
 package mods.battlegear2.client.gui;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 
 import org.lwjgl.input.Keyboard;
@@ -17,8 +18,11 @@ public final class BattlegearGuiKeyHandler {
     public static final BattlegearGuiKeyHandler INSTANCE = new BattlegearGuiKeyHandler();
 
     private BattlegearGuiKeyHandler() {
-        battleInv = new KeyBinding("Battle Inventory", Keyboard.KEY_I, "key.categories.battlegear");
-        openSigilEditor = new KeyBinding("Open Sigil Editor", Keyboard.KEY_P, "key.categories.battlegear");
+        battleInv = new KeyBinding(I18n.format("key.battleInv"), Keyboard.KEY_I, "key.categories.battlegear");
+        openSigilEditor = new KeyBinding(
+                I18n.format("key.openSigilEditor"),
+                Keyboard.KEY_P,
+                "key.categories.battlegear");
         ClientRegistry.registerKeyBinding(battleInv);
         ClientRegistry.registerKeyBinding(openSigilEditor);
     }
