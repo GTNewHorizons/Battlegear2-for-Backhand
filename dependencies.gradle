@@ -1,6 +1,6 @@
 // Add your dependencies here
 
 dependencies {
-    compileOnly('com.github.GTNewHorizons:TinkersConstruct:1.13.1-GTNH:dev') {transitive = false}
+    compileOnly('com.github.GTNewHorizons:TinkersConstruct:1.13.28-GTNH:dev') {transitive = false}
     compileOnly('curse.maven:dynamic-lights-227874:2337326')
 }
