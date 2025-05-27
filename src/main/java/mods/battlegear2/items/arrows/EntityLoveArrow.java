@@ -12,8 +12,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 
-import mods.battlegear2.api.core.IBattlePlayer;
-
 /**
  * An arrow which deals weird effects on living entities
  *
@@ -67,10 +65,9 @@ public class EntityLoveArrow extends AbstractMBArrow {
                     entityitem.delayBeforeCanPickup = PICKUP_TIME;
                     entityitem.func_145797_a(entityHit.getCommandSenderName());
                 }
-                if (!((IBattlePlayer) entityHit).battlegear2$isBattlemode())
-                    ((EntityPlayer) entityHit).inventory.setInventorySlotContents(
-                            ((EntityPlayer) entityHit).inventory.currentItem,
-                            new ItemStack(Items.cookie));
+                ((EntityPlayer) entityHit).inventory.setInventorySlotContents(
+                        ((EntityPlayer) entityHit).inventory.currentItem,
+                        new ItemStack(Items.cookie));
                 setDead();
                 return true;
             }

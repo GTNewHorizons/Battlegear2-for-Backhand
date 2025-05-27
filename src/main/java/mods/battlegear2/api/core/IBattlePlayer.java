@@ -31,11 +31,6 @@ public interface IBattlePlayer {
     void battlegear2$attackTargetEntityWithCurrentOffItem(Entity target);
 
     /**
-     * @return true if player has pressed the bound key to activate dual-wielding, resulting in current item offset
-     */
-    boolean battlegear2$isBattlemode();
-
-    /**
      * Helper for {@link IShield} usage
      *
      * @return true if a {@link IShield} is being used in offhand

@@ -3,13 +3,8 @@ package mods.battlegear2.api.core;
 import java.io.Closeable;
 import java.io.IOException;
 
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityMultiPart;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.BaseAttributeMap;
-import net.minecraft.entity.boss.EntityDragonPart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
@@ -26,16 +21,9 @@ import net.minecraft.item.ItemTool;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.potion.Potion;
-import net.minecraft.stats.AchievementList;
-import net.minecraft.stats.StatList;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -55,6 +43,7 @@ import mods.battlegear2.api.shield.IShield;
 import mods.battlegear2.api.weapons.IBattlegearWeapon;
 import mods.battlegear2.api.weapons.WeaponRegistry;
 import mods.battlegear2.asm.loader.BattlegearLoadingPlugin;
+import xonin.backhand.api.core.BackhandUtils;
 
 /**
  * Store commonly used method, mostly for the {@link EntityPlayer} {@link ItemStack}s management
@@ -102,40 +91,18 @@ public class BattlegearUtils {
         return ((IBattlePlayer) player).battlegear2$isBlockingWithShield();
     }
 
-    /**
-     * Helper method to check if player is in battlemode
-     *
-     * @param player the target player entity
-     * @return true if in battlemode
-     */
-    public static boolean isPlayerInBattlemode(EntityPlayer player) {
-        return ((IInventoryPlayerBattle) player.inventory).battlegear2$isBattlemode();
-    }
-
-    /**
-     * Helper method to set a player item, offset from the current one
-     *
-     * @param player the target player entity
-     * @param stack  holding the item to set
-     * @param offset from the current item
-     */
-    public static void setPlayerCurrentItem(EntityPlayer player, ItemStack stack, int offset) {
-        ((IInventoryPlayerBattle) (player.inventory))
-                .battlegear2$setInventorySlotContents(player.inventory.currentItem + offset, stack, false);
-    }
-
     /*
      * Helper method to set the mainhand item
      */
     public static void setPlayerCurrentItem(EntityPlayer player, ItemStack stack) {
-        setPlayerCurrentItem(player, stack, 0);
+        player.inventory.mainInventory[player.inventory.currentItem] = stack;
     }
 
     /**
      * Helper method to set the offhand item, if battlemode is activated
      */
     public static void setPlayerOffhandItem(EntityPlayer player, ItemStack stack) {
-        if (isPlayerInBattlemode(player)) setPlayerCurrentItem(player, stack, IInventoryPlayerBattle.WEAPON_SETS);
+        BackhandUtils.setPlayerOffhandItem(player, stack);
     }
 
     /**
@@ -435,213 +402,6 @@ public class BattlegearUtils {
     }
 
     /**
-     * Basically, a copy of {@link EntityPlayer#attackTargetEntityWithCurrentItem(Entity)}, adapted for the offhand
-     * Hotswap the "current item" value to the offhand, then refresh the player attributes according to the newly
-     * selected item Reset everything back if the attack is cancelled by {@link AttackEntityEvent} or
-     * {@link Item#onLeftClickEntity(ItemStack, EntityPlayer, Entity)} Used as a hook by {@link IBattlePlayer}
-     *
-     * @param player     the attacker
-     * @param par1Entity the attacked
-     */
-    public static void attackTargetEntityWithCurrentOffItem(EntityPlayer player, Entity par1Entity) {
-        refreshAttributes(player, false);
-        if (MinecraftForge.EVENT_BUS.post(new AttackEntityEvent(player, par1Entity))) {
-            refreshAttributes(player, true);
-            return;
-        }
-        ItemStack stack = player.getCurrentEquippedItem();
-        if (stack != null && stack.getItem().onLeftClickEntity(stack, player, par1Entity)) {
-            refreshAttributes(player, true);
-            return;
-        }
-        if (par1Entity.canAttackWithItem()) {
-            if (!par1Entity.hitByEntity(player)) {
-                float f = (float) player.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
-                int i = 0;
-                float f1 = 0.0F;
-
-                if (par1Entity instanceof EntityLivingBase) {
-                    f1 = EnchantmentHelper.getEnchantmentModifierLiving(player, (EntityLivingBase) par1Entity);
-                    i += EnchantmentHelper.getKnockbackModifier(player, (EntityLivingBase) par1Entity);
-                }
-                if (player.isSprinting()) {
-                    ++i;
-                }
-
-                if (f > 0.0F || f1 > 0.0F) {
-                    boolean flag = player.fallDistance > 0.0F && !player.onGround
-                            && !player.isOnLadder()
-                            && !player.isInWater()
-                            && !player.isPotionActive(Potion.blindness)
-                            && player.ridingEntity == null
-                            && par1Entity instanceof EntityLivingBase;
-
-                    if (flag && f > 0.0F) {
-                        f *= 1.5F;
-                    }
-                    f += f1;
-                    boolean flag1 = false;
-                    int j = EnchantmentHelper.getFireAspectModifier(player);
-
-                    if (par1Entity instanceof EntityLivingBase && j > 0 && !par1Entity.isBurning()) {
-                        flag1 = true;
-                        par1Entity.setFire(1);
-                    }
-
-                    boolean flag2 = par1Entity.attackEntityFrom(DamageSource.causePlayerDamage(player), f);
-
-                    if (flag2) {
-                        if (i > 0) {
-                            par1Entity.addVelocity(
-                                    (double) (-MathHelper.sin(player.rotationYaw * (float) Math.PI / 180.0F) * (float) i
-                                            * 0.5F),
-                                    0.1D,
-                                    (double) (MathHelper.cos(player.rotationYaw * (float) Math.PI / 180.0F) * (float) i
-                                            * 0.5F));
-                            player.motionX *= 0.6D;
-                            player.motionZ *= 0.6D;
-                            player.setSprinting(false);
-                        }
-
-                        if (flag) {
-                            player.onCriticalHit(par1Entity);
-                        }
-
-                        if (f1 > 0.0F) {
-                            player.onEnchantmentCritical(par1Entity);
-                        }
-
-                        if (f >= 18.0F) {
-                            player.triggerAchievement(AchievementList.overkill);
-                        }
-
-                        player.setLastAttacker(par1Entity);
-
-                        if (par1Entity instanceof EntityLivingBase) {
-                            EnchantmentHelper.func_151384_a((EntityLivingBase) par1Entity, player);
-                        }
-
-                        EnchantmentHelper.func_151385_b(player, par1Entity);
-                        ItemStack itemstack = player.getCurrentEquippedItem();
-                        Object object = par1Entity;
-
-                        if (par1Entity instanceof EntityDragonPart) {
-                            IEntityMultiPart ientitymultipart = ((EntityDragonPart) par1Entity).entityDragonObj;
-                            if (ientitymultipart != null && ientitymultipart instanceof EntityLivingBase) {
-                                object = ientitymultipart;
-                            }
-                        }
-
-                        if (itemstack != null && object instanceof EntityLivingBase) {
-                            itemstack.hitEntity((EntityLivingBase) object, player);
-                            if (itemstack.stackSize <= 0) {
-                                player.destroyCurrentEquippedItem();
-                            }
-                        }
-
-                        if (par1Entity instanceof EntityLivingBase) {
-                            player.addStat(StatList.damageDealtStat, Math.round(f * 10.0F));
-                            if (j > 0) {
-                                par1Entity.setFire(j * 4);
-                            }
-                        }
-
-                        player.addExhaustion(0.3F);
-                    } else if (flag1) {
-                        par1Entity.extinguish();
-                    }
-                }
-            }
-        }
-        refreshAttributes(player, true);
-    }
-
-    /**
-     * Patch over {@link EntityPlayer#interactWith(Entity)}, adapted for the dual wielding In battlemode, try to
-     * interact with {@link Entity#interactFirst(EntityPlayer)} in right hand, then left hand if no success then try to
-     * interact with {@link ItemStack#interactWithEntity(EntityPlayer, EntityLivingBase)} in the same order When
-     * necessary, hotswap the "current item" value to the offhand, then refresh the player attributes according to the
-     * newly selected item
-     *
-     * @return true if any interaction happened, actually bypassing subsequent
-     *         PlayerInteractEvent.Action.RIGHT_CLICK_AIR and PlayerControllerMP#sendUseItem on client side
-     */
-    public static boolean interactWith(EntityPlayer entityPlayer, Entity entity) {
-        final EntityInteractEvent event = new EntityInteractEvent(entityPlayer, entity);
-        if (MinecraftForge.EVENT_BUS.post(event)) return false;
-        ItemStack itemstack = entityPlayer.getCurrentEquippedItem();
-        boolean offset = false;
-        ItemStack copyStack = itemstack != null ? itemstack.copy() : null;
-        boolean entityInteract = entity.interactFirst(entityPlayer);
-        if (!entityInteract) { // Entity interaction didn't happen
-            if (BattlegearUtils.isPlayerInBattlemode(entityPlayer)) { // We can try left hand
-                offset = true;
-                itemstack = refreshAttributes(entityPlayer, false);
-                copyStack = itemstack != null ? itemstack.copy() : null;
-                entityInteract = entity.interactFirst(entityPlayer);
-            }
-        }
-        if (!entityInteract) { // No interaction with the entity
-            boolean itemInteract = false;
-            if (itemstack != null && entity instanceof EntityLivingBase) {
-                if (entityPlayer.capabilities.isCreativeMode) {
-                    itemstack = copyStack;
-                }
-                itemInteract = itemstack.interactWithEntity(entityPlayer, (EntityLivingBase) entity);
-                if (!itemInteract && !offset && BattlegearUtils.isPlayerInBattlemode(entityPlayer)) { // No interaction
-                    // with right hand
-                    // item
-                    offset = true;
-                    itemstack = refreshAttributes(entityPlayer, false);
-                    if (itemstack != null) { // Try left hand item
-                        itemInteract = itemstack.interactWithEntity(entityPlayer, (EntityLivingBase) entity);
-                    }
-                }
-                if (itemInteract) { // Had item interaction in either hand
-                    if (itemstack.stackSize <= 0 && !entityPlayer.capabilities.isCreativeMode) {
-                        entityPlayer.destroyCurrentEquippedItem();
-                    }
-                }
-            }
-            if (offset) { // Hand was swapped, unswap
-                refreshAttributes(entityPlayer, true);
-            }
-            if (!itemInteract && BattlegearUtils.isPlayerInBattlemode(entityPlayer)) {
-                ItemStack offhandItem = Offhand.getOffhandStack(event.entityPlayer);
-                PlayerEventChild.OffhandAttackEvent offAttackEvent = new PlayerEventChild.OffhandAttackEvent(
-                        event,
-                        offhandItem);
-                if (!MinecraftForge.EVENT_BUS.post(offAttackEvent)) {
-                    if (offAttackEvent.swingOffhand) {
-                        sendOffSwingEvent(event, offAttackEvent.offHand);
-                    }
-                    if (offAttackEvent.shouldAttack) {
-                        ((IBattlePlayer) event.entityPlayer)
-                                .battlegear2$attackTargetEntityWithCurrentOffItem(offAttackEvent.getTarget());
-                    }
-                    if (offAttackEvent.cancelParent) {
-                        return true;
-                    }
-                }
-            }
-            return itemInteract;
-        } else { // Had interaction with the entity
-            if (itemstack != null && itemstack == entityPlayer.getCurrentEquippedItem()) { // The interaction kept the
-                // stack identity
-                if (!entityPlayer.capabilities.isCreativeMode) {
-                    if (itemstack.stackSize <= 0) entityPlayer.destroyCurrentEquippedItem();
-                } else if (itemstack.stackSize < copyStack.stackSize) {
-                    itemstack.stackSize = copyStack.stackSize;
-                }
-            }
-            if (offset) { // Hand was swapped, unswap
-                refreshAttributes(entityPlayer, true);
-            }
-            return true;
-        }
-    }
-
-    /**
      * Helper to send {@link PlayerEventChild.OffhandSwingEvent}
      *
      * @param event       the "parent" event
@@ -651,24 +411,6 @@ public class BattlegearUtils {
         if (!MinecraftForge.EVENT_BUS.post(new PlayerEventChild.OffhandSwingEvent(event, offhandItem))) {
             ((IBattlePlayer) event.entityPlayer).battlegear2$swingOffItem();
         }
-    }
-
-    /**
-     * Refresh the player attribute map by swapping the wielding hand Warning: does NOT check if battlemode!
-     *
-     * @param fromOffhand if true, sets from left hand to right hand, else, the opposite
-     * @return the currently equipped stack, after swapping
-     */
-    public static ItemStack refreshAttributes(EntityPlayer entityPlayer, boolean fromOffhand) {
-        final ItemStack oldItem = entityPlayer.getCurrentEquippedItem();
-        if (fromOffhand) {
-            entityPlayer.inventory.currentItem -= IInventoryPlayerBattle.WEAPON_SETS;
-        } else {
-            entityPlayer.inventory.currentItem += IInventoryPlayerBattle.WEAPON_SETS;
-        }
-        final ItemStack newStack = entityPlayer.getCurrentEquippedItem();
-        refreshAttributes(entityPlayer.getAttributeMap(), oldItem, newStack);
-        return newStack;
     }
 
     /**
@@ -696,76 +438,6 @@ public class BattlegearUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Patch over the PlayerUseItemEvent.Finish in EntityPlayer#onItemUseFinish() to pass the previous stacksize
-     *
-     * @param entityPlayer      the {@link EntityPlayer} who finished using the itemInUse
-     * @param itemInUse         the {@link ItemStack} which finished being used
-     * @param itemInUseCount    the {@link EntityPlayer} item use count
-     * @param previousStackSize the itemInUse {@link ItemStack#stackSize} before
-     *                          {@link ItemStack#onFoodEaten(World, EntityPlayer)}
-     * @param result            from itemInUse#onFoodEaten(entityPlayer.worldObj, entityPlayer)
-     * @return the final resulting {@link ItemStack}
-     */
-    public static ItemStack beforeFinishUseEvent(EntityPlayer entityPlayer, ItemStack itemInUse, int itemInUseCount,
-            ItemStack result, int previousStackSize) {
-        result = ForgeEventFactory.onItemUseFinish(entityPlayer, itemInUse, itemInUseCount, result);
-        return beforeFinishUseEvent(entityPlayer, itemInUse, result, previousStackSize);
-    }
-
-    /**
-     * Patch over the PlayerUseItemEvent.Finish in EntityPlayer#onItemUseFinish() to pass the previous stacksize
-     *
-     * @param entityPlayer      the {@link EntityPlayer} who finished using the itemInUse
-     * @param itemInUse         the {@link ItemStack} which finished being used
-     * @param previousStackSize the itemInUse {@link ItemStack#stackSize} before
-     *                          {@link ItemStack#onFoodEaten(World, EntityPlayer)}
-     * @param result            from itemInUse#onFoodEaten(entityPlayer.worldObj, entityPlayer)
-     * @return the final resulting {@link ItemStack}
-     */
-    public static ItemStack beforeFinishUseEvent(EntityPlayer entityPlayer, ItemStack itemInUse, ItemStack result,
-            int previousStackSize) {
-        if (isPlayerInBattlemode(entityPlayer)) {
-            if (result != itemInUse || (result != null && result.stackSize != previousStackSize)) {
-                // Compare with either hands content
-                if (itemInUse == entityPlayer.getCurrentEquippedItem()) {
-                    if (result != null && result.stackSize == 0) {
-                        setPlayerCurrentItem(entityPlayer, null);
-                    } else {
-                        setPlayerCurrentItem(entityPlayer, result);
-                    }
-                } else if (itemInUse == Offhand.getOffhandStack(entityPlayer)) {
-                    if (result != null && result.stackSize == 0) {
-                        setPlayerOffhandItem(entityPlayer, null);
-                    } else {
-                        setPlayerOffhandItem(entityPlayer, result);
-                    }
-                }
-            }
-            // Reset stuff so that vanilla doesn't do anything
-            entityPlayer.clearItemInUse();
-            return null;
-        }
-        return result;
-    }
-
-    /**
-     * Patch in EntityPlayer#onUpdate() to support hotswap of itemInUse
-     *
-     * @param entityPlayer
-     * @param itemInUse
-     * @return
-     */
-    public static ItemStack getCurrentItemOnUpdate(EntityPlayer entityPlayer, ItemStack itemInUse) {
-        if (isPlayerInBattlemode(entityPlayer)) {
-            ItemStack itemStack = Offhand.getOffhandStack(entityPlayer);
-            if (itemInUse == itemStack) {
-                return itemStack;
-            }
-        }
-        return entityPlayer.getCurrentEquippedItem();
     }
 
     /**

@@ -95,16 +95,14 @@ public final class MobHookContainerClass {
                     }
                 }
             } else if (arrow.shootingEntity instanceof EntityPlayer player) {
-                if (BattlegearUtils.isPlayerInBattlemode(player)) {
-                    ItemStack offhand = Offhand.getOffhandStack(player);
-                    if (offhand != null && BattlegearUtils.isBow(offhand.getItem())) {
-                        arrow.setPosition(
-                                arrow.posX + 2 * (double) (MathHelper
-                                        .cos(arrow.shootingEntity.rotationYaw / 180.0F * (float) Math.PI) * 0.16F),
-                                arrow.posY,
-                                arrow.posZ + 2 * (double) (MathHelper
-                                        .sin(arrow.shootingEntity.rotationYaw / 180.0F * (float) Math.PI) * 0.16F));
-                    }
+                ItemStack offhand = Offhand.getOffhandStack(player);
+                if (offhand != null && BattlegearUtils.isBow(offhand.getItem())) {
+                    arrow.setPosition(
+                            arrow.posX + 2 * (double) (MathHelper
+                                    .cos(arrow.shootingEntity.rotationYaw / 180.0F * (float) Math.PI) * 0.16F),
+                            arrow.posY,
+                            arrow.posZ + 2 * (double) (MathHelper
+                                    .sin(arrow.shootingEntity.rotationYaw / 180.0F * (float) Math.PI) * 0.16F));
                 }
             }
         }

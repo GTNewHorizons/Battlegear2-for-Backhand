@@ -75,12 +75,13 @@ public class QuiverItremRenderer implements IItemRenderer {
                         // Doesn't render sheathed
                         GL11.glPopMatrix();
                         return;
-                    } else if (livingBase instanceof IBattlePlayer
-                            && ((IBattlePlayer) livingBase).battlegear2$isBattlemode()) {
-                                // Doesn't render in battlemode
-                                GL11.glPopMatrix();
-                                return;
-                            }
+                    } else if (livingBase instanceof IBattlePlayer) {
+                        // TODO-Backhand-Compat: Do we ever want to render the quiver? Maybe check if it's in off hand
+                        // instead
+                        // Doesn't render in battlemode
+                        GL11.glPopMatrix();
+                        return;
+                    }
                 }
                 GL11.glColor3f(red, green, blue);
                 ItemRenderer.renderItemIn2D(

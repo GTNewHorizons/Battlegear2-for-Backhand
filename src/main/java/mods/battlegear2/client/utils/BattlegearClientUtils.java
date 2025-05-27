@@ -1,16 +1,9 @@
 package mods.battlegear2.client.utils;
 
 import net.minecraft.client.entity.EntityOtherPlayerMP;
-import net.minecraft.item.ItemBucket;
-import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 
-import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import mods.battlegear2.Offhand;
-import mods.battlegear2.api.RenderPlayerEventChild;
 import mods.battlegear2.api.core.BattlegearUtils;
 
 public final class BattlegearClientUtils {
@@ -24,10 +17,8 @@ public final class BattlegearClientUtils {
      */
     public static boolean entityOtherPlayerIsItemInUseHook(EntityOtherPlayerMP player, boolean isItemInUse) {
         ItemStack itemStack = player.getCurrentEquippedItem();
-        if (BattlegearUtils.isPlayerInBattlemode(player)) {
-            ItemStack offhand = Offhand.getOffhandStack(player);
-            if (offhand != null && BattlegearUtils.usagePriorAttack(offhand, player, true)) itemStack = offhand;
-        }
+        ItemStack offhand = Offhand.getOffhandStack(player);
+        if (offhand != null && BattlegearUtils.usagePriorAttack(offhand, player, true)) itemStack = offhand;
         if (!isItemInUse && player.isEating() && itemStack != null) {
             player.setItemInUse(itemStack, itemStack.getMaxItemUseDuration());
             return true;
@@ -37,20 +28,5 @@ public final class BattlegearClientUtils {
         } else {
             return isItemInUse;
         }
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onRenderOffhandItem(RenderPlayerEventChild.PreRenderSheathed preRender) {
-        if (preRender.element != null) {
-            if (preRender.element.getItem() instanceof ItemBucket
-                    || preRender.element.getItem() instanceof ItemPotion) {
-                flip(0.8F);
-            }
-        }
-    }
-
-    public static void flip(float scale) {
-        GL11.glScalef(scale, -scale, scale);
-        GL11.glTranslatef(0, -1, 0);
     }
 }

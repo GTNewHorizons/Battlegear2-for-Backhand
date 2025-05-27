@@ -1,29 +1,20 @@
 package mods.battlegear2.mixins.early;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-
-import mods.battlegear2.Offhand;
 import mods.battlegear2.api.core.BattlegearUtils;
 import mods.battlegear2.api.core.IBattlePlayer;
 
 @Mixin(EntityPlayer.class)
 public abstract class MixinEntityPlayer extends EntityLivingBase implements IBattlePlayer {
 
-    @Shadow
-    private ItemStack itemInUse;
     @Shadow
     public InventoryPlayer inventory;
     @Unique
@@ -41,56 +32,6 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IBat
 
     private MixinEntityPlayer(World p_i1594_1_) {
         super(p_i1594_1_);
-    }
-
-    @Unique
-    private int battlegear2$local$onItemFinish$i;
-
-    @ModifyExpressionValue(
-            method = "onItemUseFinish",
-            at = @At(value = "FIELD", target = "Lnet/minecraft/item/ItemStack;stackSize:I", ordinal = 0))
-    private int battlegear2$captureLocal$onItemFinish(int i) {
-        this.battlegear2$local$onItemFinish$i = i;
-        return i;
-    }
-
-    @ModifyExpressionValue(
-            method = "onItemUseFinish",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraftforge/event/ForgeEventFactory;onItemUseFinish(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/item/ItemStack;ILnet/minecraft/item/ItemStack;)Lnet/minecraft/item/ItemStack;",
-                    remap = false))
-    private ItemStack battlegear2$onItemUseFinish$beforeFinishUse(ItemStack itemStack) {
-        return BattlegearUtils.beforeFinishUseEvent(
-                (EntityPlayer) (Object) this,
-                this.itemInUse,
-                itemStack,
-                this.battlegear2$local$onItemFinish$i);
-    }
-
-    @ModifyExpressionValue(
-            method = "onUpdate",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/entity/player/InventoryPlayer;getCurrentItem()Lnet/minecraft/item/ItemStack;"))
-    private ItemStack battlegear2$onUpdate$getCurrentItem(ItemStack currentItemStack) {
-        EntityPlayer player = (EntityPlayer) (Object) this;
-        if (BattlegearUtils.isPlayerInBattlemode(player)) {
-            ItemStack itemStack = Offhand.getOffhandStack(player);
-            if (itemInUse == itemStack) {
-                return itemStack;
-            }
-        }
-        return currentItemStack;
-    }
-
-    /**
-     * @author Alexdoru
-     * @reason IDK it's the original mod that does that
-     */
-    @Overwrite
-    public boolean interactWith(Entity var1) {
-        return BattlegearUtils.interactWith((EntityPlayer) (Object) this, var1);
     }
 
     @Override
@@ -137,15 +78,6 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IBat
             ++diff;
         }
         return this.battlegear2$prevOffHandSwingProgress + diff * frame;
-    }
-
-    public void battlegear2$attackTargetEntityWithCurrentOffItem(Entity target) {
-        BattlegearUtils.attackTargetEntityWithCurrentOffItem((EntityPlayer) (Object) this, target);
-    }
-
-    @Override
-    public boolean battlegear2$isBattlemode() {
-        return BattlegearUtils.isPlayerInBattlemode((EntityPlayer) (Object) this);
     }
 
     @Override

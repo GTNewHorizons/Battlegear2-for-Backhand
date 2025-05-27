@@ -53,12 +53,10 @@ public class BattlegearConfig {
 
     public static final String MODID = "battlegear2:";
     private static Configuration file;
-    public static boolean alwaysShowBattleBar = false;
     public static CreativeTabs customTab;
-    public static Sheath forceSheath = Sheath.HIP;
     public static int updateRate = 20;
     public static boolean arrowForceRendered = true, enableSkeletonQuiver = true;
-    public static boolean enableGUIKeys = true, enableGuiButtons = true, forceHUD = false;
+    public static boolean forceHUD = false;
     public static final String[] itemNames = { "heraldric", "chain", "quiver", "dagger", "waraxe", "mace", "spear",
             "shield", "knight.armour", "mb.arrow", "flagpole", "bow" };
     public static final String[] materials = { "iron", "gold", "diamond", "greg" };
@@ -86,11 +84,6 @@ public class BattlegearConfig {
     public static void getConfig(Configuration config) {
         file = config;
 
-        alwaysShowBattleBar = config
-                .get(Configuration.CATEGORY_GENERAL, "Always Show Battlegear Slots", alwaysShowBattleBar).getBoolean();
-        enableGUIKeys = config.get(Configuration.CATEGORY_GENERAL, "Enable GUI Keys", enableGUIKeys).getBoolean();
-        enableGuiButtons = config.get(Configuration.CATEGORY_GENERAL, "Enable GUI Buttons", enableGuiButtons)
-                .getBoolean();
         updateRate = config.getInt(
                 "Update packet rate",
                 "Server",
@@ -130,13 +123,6 @@ public class BattlegearConfig {
                     .get(category, "Mainhand hotbar relative " + pos[i] + " position", 0, comments[3]).getInt();
         }
         arrowForceRendered = config.get(category, "Render arrow with bow uncharged", arrowForceRendered).getBoolean();
-        forceSheath = Sheath.from(
-                config.get(
-                        category,
-                        "Default Sheath",
-                        forceSheath.toString(),
-                        "Where sheathed items are going by default",
-                        Sheath.names()).getString());
         enableSkeletonQuiver = config.get(category, "Render quiver on skeleton back", enableSkeletonQuiver)
                 .getBoolean();
         forceHUD = config.get(category, "Force screen components rendering", forceHUD).getBoolean();
@@ -531,11 +517,8 @@ public class BattlegearConfig {
             Arrays.sort(disabledRenderers);
             file.get("Rendering", "Disabled Renderers", new String[0], comments[2]).set(disabledRenderers);
             file.get("Rendering", "Render arrow with bow uncharged", true).set(arrowForceRendered);
-            file.get("Rendering", "Default Sheath", Sheath.HIP.toString()).set(forceSheath.toString());
             file.get("Rendering", "Render quiver on skeleton back", true).set(enableSkeletonQuiver);
             file.get("Rendering", "Force screen components rendering", false).set(forceHUD);
-            file.get(Configuration.CATEGORY_GENERAL, "Enable GUI Keys", false).set(enableGUIKeys);
-            file.get(Configuration.CATEGORY_GENERAL, "Enable GUI Buttons", true).set(enableGuiButtons);
             file.save();
             Battlegear.proxy.registerItemRenderers();
         } catch (Exception e) {

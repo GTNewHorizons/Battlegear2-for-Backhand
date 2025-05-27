@@ -56,7 +56,6 @@ public class Battlegear {
     public static CommonProxy proxy;
 
     public static ItemArmor.ArmorMaterial knightArmourMaterial;
-    public static boolean battlegearEnabled = true;
     public static boolean debug = false;
 
     public static Logger logger;
@@ -84,9 +83,6 @@ public class Battlegear {
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        if (Loader.isModLoaded("TConstruct")) { // Tinker's Construct support for tabs in main inventory
-            proxy.tryUseTConstruct();
-        }
         if (Loader.isModLoaded("DynamicLights_thePlayer")) { // Dynamic Light support for held light in left hand
             proxy.tryUseDynamicLight(null, null);
         }

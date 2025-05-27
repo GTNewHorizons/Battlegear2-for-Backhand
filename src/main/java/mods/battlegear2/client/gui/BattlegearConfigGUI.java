@@ -47,20 +47,6 @@ public final class BattlegearConfigGUI extends GuiScreen {
         this.buttonList.add(new GuiButton(1, this.width / 2 - 75, this.height - 38, I18n.format("gui.done")));
         this.buttonList.add(
                 new GuiToggleButton(
-                        2,
-                        this.width / 2 - 180,
-                        this.height / 2 - 100,
-                        I18n.format("use.gui.buttons") + ":" + BattlegearConfig.enableGuiButtons,
-                        this.fontRendererObj));
-        this.buttonList.add(
-                new GuiToggleButton(
-                        3,
-                        this.width / 2 + 20,
-                        this.height / 2 - 100,
-                        I18n.format("use.gui.keys") + ":" + BattlegearConfig.enableGUIKeys,
-                        this.fontRendererObj));
-        this.buttonList.add(
-                new GuiToggleButton(
                         4,
                         this.width / 2 - 180,
                         this.height / 2 - 70,
@@ -75,13 +61,6 @@ public final class BattlegearConfigGUI extends GuiScreen {
                         this.fontRendererObj));
         this.buttonList.add(
                 new GuiToggleButton(
-                        6,
-                        this.width / 2 - 180,
-                        this.height / 2 - 40,
-                        BattlegearConfig.forceSheath.format(),
-                        this.fontRendererObj));
-        this.buttonList.add(
-                new GuiToggleButton(
                         7,
                         this.width / 2 + 20,
                         this.height / 2 + 60,
@@ -90,13 +69,6 @@ public final class BattlegearConfigGUI extends GuiScreen {
         this.possibleValues.registerScrollButtons(this.buttonList, 8, 9);
         this.buttonList
                 .add(new GuiButton(10, this.width / 2 - 180, this.height / 2 + 60, I18n.format("gui.open.fake")));
-        this.buttonList.add(
-                new GuiToggleButton(
-                        11,
-                        this.width / 2 + 60,
-                        this.height / 2 - 40,
-                        I18n.format("render.always.slots") + ":" + BattlegearConfig.alwaysShowBattleBar,
-                        this.fontRendererObj));
     }
 
     @Override
@@ -104,23 +76,14 @@ public final class BattlegearConfigGUI extends GuiScreen {
         if (button.enabled) {
             if (button.id == 1) {
                 FMLClientHandler.instance().showGuiScreen(parent);
-            } else if (button.id == 2) {
-                BattlegearConfig.enableGuiButtons = !BattlegearConfig.enableGuiButtons;
-            } else if (button.id == 3) {
-                BattlegearConfig.enableGUIKeys = !BattlegearConfig.enableGUIKeys;
             } else if (button.id == 4) {
                 BattlegearConfig.enableSkeletonQuiver = !BattlegearConfig.enableSkeletonQuiver;
             } else if (button.id == 5) {
                 BattlegearConfig.arrowForceRendered = !BattlegearConfig.arrowForceRendered;
-            } else if (button.id == 6) {
-                BattlegearConfig.forceSheath = BattlegearConfig.forceSheath.next();
-                button.displayString = BattlegearConfig.forceSheath.format();
             } else if (button.id == 7) {
                 BattlegearConfig.forceHUD = !BattlegearConfig.forceHUD;
             } else if (button.id == 10) {
                 FMLClientHandler.instance().showGuiScreen(new BattlegearFakeGUI(parent));
-            } else if (button.id == 11) {
-                BattlegearConfig.alwaysShowBattleBar = !BattlegearConfig.alwaysShowBattleBar;
             }
             if (button instanceof GuiToggleButton) {
                 ((GuiToggleButton) button).toggleDisplayString();

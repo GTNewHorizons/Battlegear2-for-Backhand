@@ -2,16 +2,12 @@ package mods.battlegear2;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.WorldServer;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import mods.battlegear2.api.core.IBattlePlayer;
-import mods.battlegear2.api.core.IInventoryPlayerBattle;
 import mods.battlegear2.api.quiver.QuiverArrowRegistry;
 import mods.battlegear2.api.shield.IShield;
-import mods.battlegear2.packet.BattlegearSyncItemPacket;
-import mods.battlegear2.utils.BattlegearConfig;
 
 public final class BattlegearTickHandeler {
 
@@ -30,23 +26,23 @@ public final class BattlegearTickHandeler {
 
     public void tickStart(EntityPlayer entityPlayer) {
 
-        if (!entityPlayer.worldObj.isRemote && entityPlayer.worldObj instanceof WorldServer) {
-
-            if (((IInventoryPlayerBattle) entityPlayer.inventory).battlegear2$isDirty()) {
-                ((WorldServer) entityPlayer.worldObj).getEntityTracker()
-                        .func_151248_b(entityPlayer, new BattlegearSyncItemPacket(entityPlayer).generatePacket());
-                ((IBattlePlayer) entityPlayer).battlegear2$setSpecialActionTimer(0);
-                ((IInventoryPlayerBattle) entityPlayer.inventory).battlegear2$setDirty(entityPlayer.ticksExisted < 10);
-            }
-            // Force update every 3 seconds
-            else if (((IBattlePlayer) entityPlayer).battlegear2$isBattlemode()
-                    && entityPlayer.ticksExisted % BattlegearConfig.updateRate == 0
-                    && !entityPlayer.isUsingItem()) {
-                        ((WorldServer) entityPlayer.worldObj).getEntityTracker().func_151248_b(
-                                entityPlayer,
-                                new BattlegearSyncItemPacket(entityPlayer).generatePacket());
-                    }
-        }
+        // if (!entityPlayer.worldObj.isRemote && entityPlayer.worldObj instanceof WorldServer) {
+        //
+        // if (((IInventoryPlayerBattle) entityPlayer.inventory).battlegear2$isDirty()) {
+        // ((WorldServer) entityPlayer.worldObj).getEntityTracker()
+        // .func_151248_b(entityPlayer, new BattlegearSyncItemPacket(entityPlayer).generatePacket());
+        // ((IBattlePlayer) entityPlayer).battlegear2$setSpecialActionTimer(0);
+        // ((IInventoryPlayerBattle) entityPlayer.inventory).battlegear2$setDirty(entityPlayer.ticksExisted < 10);
+        // }
+        // // Force update every 3 seconds
+        // else if (((IBattlePlayer) entityPlayer).battlegear2$isBattlemode()
+        // && entityPlayer.ticksExisted % BattlegearConfig.updateRate == 0
+        // && !entityPlayer.isUsingItem()) {
+        // ((WorldServer) entityPlayer.worldObj).getEntityTracker().func_151248_b(
+        // entityPlayer,
+        // new BattlegearSyncItemPacket(entityPlayer).generatePacket());
+        // }
+        // }
     }
 
     public void tickEnd(EntityPlayer entityPlayer) {

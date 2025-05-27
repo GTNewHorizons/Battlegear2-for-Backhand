@@ -43,22 +43,6 @@ public final class BattlegearFakeGUI extends GuiScreen {
                         182,
                         9,
                         new BlockBarRenderer()));
-        this.buttonList.add(
-                new GuiDrawButton(
-                        4,
-                        this.width / 2 - 184 + BattlegearConfig.battleBarOffset[0],
-                        this.height - 22 + BattlegearConfig.battleBarOffset[1],
-                        62,
-                        22,
-                        new WeaponSlotRenderer(false)));
-        this.buttonList.add(
-                new GuiDrawButton(
-                        5,
-                        this.width / 2 + 121 + BattlegearConfig.battleBarOffset[2],
-                        this.height - 22 + BattlegearConfig.battleBarOffset[3],
-                        62,
-                        22,
-                        new WeaponSlotRenderer(true)));
     }
 
     @Override
@@ -105,20 +89,6 @@ public final class BattlegearFakeGUI extends GuiScreen {
             }
         }
         BattlegearConfig.refreshGuiValues();
-    }
-
-    public final class WeaponSlotRenderer implements GuiDrawButton.IDrawnHandler {
-
-        private final boolean isMainHand;
-
-        public WeaponSlotRenderer(boolean isMainHand) {
-            this.isMainHand = isMainHand;
-        }
-
-        @Override
-        public void drawElement(ScaledResolution resolution, int varX, int varY) {
-            helper.renderBattleSlots(varX, varY, 0, isMainHand);
-        }
     }
 
     public final class BlockBarRenderer implements GuiDrawButton.IDrawnHandler {

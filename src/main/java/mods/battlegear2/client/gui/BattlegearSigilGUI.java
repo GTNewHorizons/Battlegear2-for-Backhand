@@ -14,7 +14,6 @@ import org.lwjgl.opengl.GL11;
 import mods.battlegear2.Battlegear;
 import mods.battlegear2.api.heraldry.HeraldryData;
 import mods.battlegear2.api.heraldry.RefreshableTexture;
-import mods.battlegear2.client.BattlegearClientEvents;
 import mods.battlegear2.client.gui.controls.GUICrestElementList;
 import mods.battlegear2.client.gui.controls.GuiColourPicker;
 import mods.battlegear2.client.gui.controls.GuiColourToggleButton;
@@ -143,7 +142,8 @@ public class BattlegearSigilGUI extends GuiContainer {
         buttonList.add(colourPickerPattern);
 
         scrollListPattern = new GuiPatternScrollList(this, 125, 45, height - 32, (width + 160) / 2);
-        BattlegearClientEvents.onOpenGui(buttonList, guiLeft - 100, 5);
+        // TODO-Backhand-Compat: Figure out if this is worth re-enabling or whether this entire class needs to go
+        // BattlegearClientEvents.onOpenGui(buttonList, guiLeft - 100, 5);
     }
 
     public FontRenderer getFontRenderer() {

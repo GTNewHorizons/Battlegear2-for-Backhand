@@ -34,7 +34,6 @@ import mods.battlegear2.Offhand;
 import mods.battlegear2.api.core.BattlegearUtils;
 import mods.battlegear2.api.heraldry.IHeraldryItem;
 import mods.battlegear2.api.shield.IShield;
-import mods.battlegear2.client.gui.BattlegearGuiKeyHandler;
 import mods.battlegear2.client.renderer.BowRenderer;
 import mods.battlegear2.client.renderer.BowRendererDiamond;
 import mods.battlegear2.client.renderer.BowRendererIron;
@@ -60,13 +59,6 @@ public final class ClientProxy extends CommonProxy {
     private static Method dynLightFromItemStack, refresh;
     public static ItemStack heldCache;
     public static IIcon[] backgroundIcon, bowIcons, bowIronIcons, bowDiamondIcons, bowGoldIcons; // bowGregIcons,;
-
-    @Override
-    public void registerKeyHandelers() {
-        if (BattlegearConfig.enableGUIKeys) {
-            FMLCommonHandler.instance().bus().register(BattlegearGuiKeyHandler.INSTANCE);
-        }
-    }
 
     @Override
     public void registerTickHandelers() {
@@ -225,32 +217,6 @@ public final class ClientProxy extends CommonProxy {
             }
         }
         return null;
-    }
-
-    @Override
-    public void tryUseTConstruct() {
-        try {
-            Object tcManager = Class.forName("tconstruct.TConstruct").getField("pulsar").get(null);
-            if ((Boolean) tcManager.getClass().getMethod("isPulseLoaded", String.class)
-                    .invoke(tcManager, "Tinkers' Armory")) {
-                Class<?> tabRegistry = Class.forName("tconstruct.client.tabs.TabRegistry");
-                Class<?> abstractTab = Class.forName("tconstruct.client.tabs.AbstractTab");
-                Method registerTab = tabRegistry.getMethod("registerTab", abstractTab);
-                updateTab = tabRegistry.getMethod("updateTabValues", int.class, int.class, Class.class);
-                addTabs = tabRegistry.getMethod("addTabsToList", List.class);
-                registerTab.invoke(
-                        null,
-                        Class.forName("mods.battlegear2.client.gui.controls.EquipGearTab").getConstructor()
-                                .newInstance());
-                if (Battlegear.debug) {
-                    registerTab.invoke(
-                            null,
-                            Class.forName("mods.battlegear2.client.gui.controls.SigilTab").getConstructor()
-                                    .newInstance());
-                }
-                tconstructEnabled = true;
-            }
-        } catch (Throwable ignored) {}
     }
 
     @Override
