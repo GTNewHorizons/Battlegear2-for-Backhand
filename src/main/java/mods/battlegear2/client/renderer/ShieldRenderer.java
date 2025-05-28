@@ -13,8 +13,9 @@ import org.lwjgl.opengl.GL11;
 import cpw.mods.fml.common.Loader;
 import mods.battlegear2.client.utils.BattlegearRenderHelper;
 import mods.battlegear2.items.ItemShield;
+import xonin.backhand.compat.IOffhandRenderOptOut;
 
-public class ShieldRenderer implements IItemRenderer {
+public class ShieldRenderer implements IItemRenderer, IOffhandRenderOptOut {
 
     private RenderItem itemRenderer;
 

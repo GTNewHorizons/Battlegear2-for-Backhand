@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.RenderSkeleton;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
@@ -96,23 +95,10 @@ public final class BattlegearClientEvents {
      */
     @SubscribeEvent(priority = EventPriority.LOW)
     public void renderPlayerLeftItemUsage(RenderLivingEvent.Pre event) {
-        if (event.entity instanceof EntityPlayer) {
-            EntityPlayer entityPlayer = (EntityPlayer) event.entity;
+        if (event.entity instanceof EntityPlayer entityPlayer) {
             ItemStack offhand = Offhand.getOffhandStack(entityPlayer);
-            if (offhand != null && event.renderer instanceof RenderPlayer) {
-                RenderPlayer renderer = ((RenderPlayer) event.renderer);
-                renderer.modelArmorChestplate.heldItemLeft = renderer.modelArmor.heldItemLeft = renderer.modelBipedMain.heldItemLeft = 1;
-                if (entityPlayer.getItemInUseCount() > 0 && entityPlayer.getItemInUse() == offhand) {
-                    EnumAction enumaction = offhand.getItemUseAction();
-                    if (enumaction == EnumAction.block) {
-                        renderer.modelArmorChestplate.heldItemLeft = renderer.modelArmor.heldItemLeft = renderer.modelBipedMain.heldItemLeft = 3;
-                    } else if (enumaction == EnumAction.bow) {
-                        renderer.modelArmorChestplate.aimedBow = renderer.modelArmor.aimedBow = renderer.modelBipedMain.aimedBow = true;
-                    }
-                    ItemStack mainhand = entityPlayer.inventory.getCurrentItem();
-                    renderer.modelArmorChestplate.heldItemRight = renderer.modelArmor.heldItemRight = renderer.modelBipedMain.heldItemRight = mainhand
-                            != null ? 1 : 0;
-                } else if (((IBattlePlayer) entityPlayer).battlegear2$isBlockingWithShield()) {
+            if (offhand != null && event.renderer instanceof RenderPlayer renderer) {
+                if (((IBattlePlayer) entityPlayer).battlegear2$isBlockingWithShield()) {
                     renderer.modelArmorChestplate.heldItemLeft = renderer.modelArmor.heldItemLeft = renderer.modelBipedMain.heldItemLeft = 3;
                 }
             }

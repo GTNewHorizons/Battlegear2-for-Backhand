@@ -1,15 +1,10 @@
 package mods.battlegear2.client.utils;
 
-import static net.minecraftforge.client.IItemRenderer.ItemRenderType.EQUIPPED;
-import static net.minecraftforge.client.IItemRenderer.ItemRendererHelper.BLOCK_3D;
-
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -19,14 +14,10 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 
 import org.lwjgl.opengl.GL11;
@@ -440,9 +431,9 @@ public final class BattlegearRenderHelper {
 
     public static void renderItemIn3rdPerson(EntityPlayer par1EntityPlayer, ModelBiped modelBipedMain, float frame) {
 
-        ItemStack var21 = Offhand.getOffhandStack(par1EntityPlayer);
+        ItemStack offhandItem = Offhand.getOffhandStack(par1EntityPlayer);
 
-        if (var21 != null) {
+        if (offhandItem != null && offhandItem.getItem() instanceof IShield) {
 
             float var7;
             RenderPlayer render = (RenderPlayer) RenderManager.instance.getEntityRenderObject(par1EntityPlayer);
@@ -456,83 +447,21 @@ public final class BattlegearRenderHelper {
 
             GL11.glTranslatef(RENDER_UNIT, 7 * RENDER_UNIT, RENDER_UNIT);
 
-            if (par1EntityPlayer.fishEntity != null) {
-                var21 = new ItemStack(Items.stick);
-            }
+            var7 = 10 * RENDER_UNIT;
+            GL11.glScalef(var7, -var7, var7);
 
-            EnumAction var23 = null;
+            GL11.glTranslated(8 * RENDER_UNIT, -11 * RENDER_UNIT, -RENDER_UNIT);
 
-            if (par1EntityPlayer.getItemInUseCount() > 0) {
-                var23 = var21.getItemUseAction();
-            }
-
-            IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(var21, EQUIPPED);
-            boolean is3D = (customRenderer != null && customRenderer.shouldUseRenderHelper(EQUIPPED, var21, BLOCK_3D));
-
-            if (var21.getItem() instanceof IShield) {
-                var7 = 10 * RENDER_UNIT;
-                GL11.glScalef(var7, -var7, var7);
-
-                GL11.glTranslated(8 * RENDER_UNIT, -11 * RENDER_UNIT, -RENDER_UNIT);
-
-                GL11.glRotatef(-10.0F, 1.0F, 0.0F, 0.0F);
-                GL11.glRotatef(-45.0F, 0.0F, 1.0F, 0.0F);
-                GL11.glRotatef(25.0F, 0.0F, 0.0F, 1.0F);
-                if (!BattlegearUtils.RENDER_BUS
-                        .post(new PreRenderPlayerElement(preRender, false, PlayerElementType.ItemOffhand, var21))) {
-                    renderItemAllPasses(par1EntityPlayer, var21);
-                }
-            } else {
-
-                if (var21.getItem() instanceof ItemBlock && (is3D
-                        || RenderBlocks.renderItemIn3d(Block.getBlockFromItem(var21.getItem()).getRenderType()))) {
-                    GL11.glTranslatef(0.0F, 3 * RENDER_UNIT, -5 * RENDER_UNIT);
-                    var7 = 0.5F * 0.75F;
-                    GL11.glRotatef(20.0F, 1.0F, 0.0F, 0.0F);
-                    GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-                    GL11.glScalef(-var7, -var7, var7);
-                } else if (BattlegearUtils.isBow(var21.getItem())) {
-                    var7 = 10 * RENDER_UNIT;
-                    GL11.glTranslatef(0, 2 * RENDER_UNIT, 5 * RENDER_UNIT);
-                    GL11.glRotatef(-20.0F, 0.0F, 1.0F, 0.0F);
-                    GL11.glScalef(var7, -var7, var7);
-                    GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
-                    GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-                } else if (var21.getItem().isFull3D()) {
-                    var7 = 10 * RENDER_UNIT;
-
-                    if (var21.getItem().shouldRotateAroundWhenRendering()) {
-                        GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);
-                        GL11.glTranslatef(0, -2 * RENDER_UNIT, 0);
-                    }
-
-                    if (par1EntityPlayer.getItemInUseCount() > 0 && var23 == EnumAction.block) {
-                        GL11.glTranslatef(-0.05F, 0.0F, -0.1F);
-                        GL11.glRotatef(50.0F, 0.0F, 1.0F, 0.0F);
-                        GL11.glRotatef(10.0F, 1.0F, 0.0F, 0.0F);
-                        GL11.glRotatef(40.0F, 0.0F, 0.0F, 1.0F);
-                    }
-
-                    GL11.glTranslatef(0, 3 * RENDER_UNIT, 0);
-                    GL11.glScalef(var7, -var7, var7);
-                    GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
-                    GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-                } else {
-                    var7 = 6 * RENDER_UNIT;
-                    GL11.glTranslatef(4 * RENDER_UNIT, 3 * RENDER_UNIT, -3 * RENDER_UNIT);
-                    GL11.glScalef(var7, var7, var7);
-                    GL11.glRotatef(60.0F, 0.0F, 0.0F, 1.0F);
-                    GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
-                    GL11.glRotatef(20.0F, 0.0F, 0.0F, 1.0F);
-                }
-
-                if (!BattlegearUtils.RENDER_BUS
-                        .post(new PreRenderPlayerElement(preRender, false, PlayerElementType.ItemOffhand, var21))) {
-                    renderItemAllPasses(par1EntityPlayer, var21);
-                }
+            GL11.glRotatef(-10.0F, 1.0F, 0.0F, 0.0F);
+            GL11.glRotatef(-45.0F, 0.0F, 1.0F, 0.0F);
+            GL11.glRotatef(25.0F, 0.0F, 0.0F, 1.0F);
+            if (!BattlegearUtils.RENDER_BUS
+                    .post(new PreRenderPlayerElement(preRender, false, PlayerElementType.ItemOffhand, offhandItem))) {
+                renderItemAllPasses(par1EntityPlayer, offhandItem);
             }
             BattlegearUtils.RENDER_BUS
-                    .post(new PostRenderPlayerElement(postRender, false, PlayerElementType.ItemOffhand, var21));
+                    .post(new PostRenderPlayerElement(postRender, false, PlayerElementType.ItemOffhand, offhandItem));
+
             GL11.glPopMatrix();
         }
     }
