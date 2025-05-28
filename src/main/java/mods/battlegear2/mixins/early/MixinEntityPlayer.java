@@ -81,6 +81,12 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IBat
     }
 
     @Override
+    public boolean battlegear2$isBattlemode() {
+        // Always false in this version.
+        return false;
+    }
+
+    @Override
     public boolean battlegear2$isBlockingWithShield() {
         return BattlegearUtils.canBlockWithShield((EntityPlayer) (Object) this) && this.battlegear2$isShielding;
     }

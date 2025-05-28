@@ -31,6 +31,14 @@ public interface IBattlePlayer {
     void battlegear2$attackTargetEntityWithCurrentOffItem(Entity target);
 
     /**
+     * Since battle mode is removed in this version, the implementation always returns false. <br>
+     * Kept for compat with Angelica
+     *
+     * @return true if player has pressed the bound key to activate dual-wielding, resulting in current item offset
+     */
+    boolean battlegear2$isBattlemode();
+
+    /**
      * Helper for {@link IShield} usage
      *
      * @return true if a {@link IShield} is being used in offhand
