@@ -15,12 +15,12 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import cpw.mods.fml.client.FMLClientHandler;
-import mods.battlegear2.Offhand;
 import mods.battlegear2.api.RenderItemBarEvent;
 import mods.battlegear2.api.quiver.IArrowContainer2;
 import mods.battlegear2.api.quiver.QuiverArrowRegistry;
 import mods.battlegear2.api.shield.IShield;
 import mods.battlegear2.client.BattlegearClientTickHandeler;
+import xonin.backhand.api.core.BackhandUtils;
 
 public class BattlegearInGameGUI extends Gui {
 
@@ -56,7 +56,7 @@ public class BattlegearInGameGUI extends Gui {
 
             RenderItemBarEvent event;
 
-            ItemStack offhand = Offhand.getOffhandStack(mc.thePlayer);
+            ItemStack offhand = BackhandUtils.getOffhandItem(mc.thePlayer);
             if (offhand != null && offhand.getItem() instanceof IShield) {
                 event = new RenderItemBarEvent.ShieldBar(renderEvent, offhand);
                 if (!MinecraftForge.EVENT_BUS.post(event))
@@ -75,7 +75,7 @@ public class BattlegearInGameGUI extends Gui {
                 }
             }
             if (!quiverFound) {
-                mainhand = Offhand.getOffhandStack(mc.thePlayer);
+                mainhand = BackhandUtils.getOffhandItem(mc.thePlayer);
                 if (mainhand != null) {
                     ItemStack quiver = QuiverArrowRegistry.getArrowContainer(mainhand, mc.thePlayer);
                     if (quiver != null) {

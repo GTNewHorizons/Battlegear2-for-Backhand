@@ -30,7 +30,6 @@ import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 import cpw.mods.fml.common.registry.GameData;
 import mods.battlegear2.Battlegear;
 import mods.battlegear2.CommonProxy;
-import mods.battlegear2.Offhand;
 import mods.battlegear2.api.core.BattlegearUtils;
 import mods.battlegear2.api.heraldry.IHeraldryItem;
 import mods.battlegear2.api.shield.IShield;
@@ -50,6 +49,7 @@ import mods.battlegear2.packet.BattlegearAnimationPacket;
 import mods.battlegear2.packet.SpecialActionPacket;
 import mods.battlegear2.utils.BattlegearConfig;
 import mods.battlegear2.utils.EnumBGAnimations;
+import xonin.backhand.api.core.BackhandUtils;
 
 public final class ClientProxy extends CommonProxy {
 
@@ -80,7 +80,7 @@ public final class ClientProxy extends CommonProxy {
     public void startFlash(EntityPlayer player, float damage) {
         if (player.getCommandSenderName().equals(Minecraft.getMinecraft().thePlayer.getCommandSenderName())) {
             BattlegearClientTickHandeler.resetFlash();
-            ItemStack offhand = Offhand.getOffhandStack(player);
+            ItemStack offhand = BackhandUtils.getOffhandItem(player);
 
             if (offhand != null && offhand.getItem() instanceof IShield) BattlegearClientTickHandeler
                     .reduceBlockTime(((IShield) offhand.getItem()).getDamageDecayRate(offhand, damage));

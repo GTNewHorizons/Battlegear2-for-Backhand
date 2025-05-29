@@ -19,9 +19,9 @@ import net.minecraft.world.World;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 
-import mods.battlegear2.Offhand;
 import mods.battlegear2.api.ISensible;
 import mods.battlegear2.items.ItemQuiver;
+import xonin.backhand.api.core.BackhandUtils;
 
 public class QuiverArrowRegistry {
 
@@ -129,7 +129,7 @@ public class QuiverArrowRegistry {
             ItemStack temp = getArrowContainer(bow, entityPlayer);
             if (temp != null) return temp;
         }
-        bow = Offhand.getOffhandStack(entityPlayer);
+        bow = BackhandUtils.getOffhandItem(entityPlayer);
         return bow != null ? getArrowContainer(bow, entityPlayer) : null;
     }
 
@@ -180,7 +180,7 @@ public class QuiverArrowRegistry {
         if (bow != null && bow.getItem() instanceof ISpecialBow) {
             return bow;
         }
-        return Offhand.getOffhandStack(player);
+        return BackhandUtils.getOffhandItem(player);
     }
 
     // Allows customization of fire handler list for custom bows

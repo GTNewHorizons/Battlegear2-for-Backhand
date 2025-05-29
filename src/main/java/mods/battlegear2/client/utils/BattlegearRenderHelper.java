@@ -14,7 +14,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
@@ -23,8 +22,6 @@ import net.minecraftforge.client.event.RenderPlayerEvent;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import cpw.mods.fml.common.Loader;
-import mods.battlegear2.Offhand;
 import mods.battlegear2.api.RenderPlayerEventChild.PlayerElementType;
 import mods.battlegear2.api.RenderPlayerEventChild.PostRenderPlayerElement;
 import mods.battlegear2.api.RenderPlayerEventChild.PreRenderPlayerElement;
@@ -33,6 +30,7 @@ import mods.battlegear2.api.core.IBattlePlayer;
 import mods.battlegear2.api.core.IOffhandRender;
 import mods.battlegear2.api.shield.IArrowDisplay;
 import mods.battlegear2.api.shield.IShield;
+import xonin.backhand.api.core.BackhandUtils;
 
 public final class BattlegearRenderHelper {
 
@@ -65,10 +63,8 @@ public final class BattlegearRenderHelper {
     }
 
     public static void renderItemInFirstPerson(float frame, Minecraft mc, ItemRenderer itemRenderer) {
-        if (Loader.isModLoaded("backhand")) {
-            GL11.glPopMatrix();
-            GL11.glCullFace(GL11.GL_BACK);
-        }
+        GL11.glPopMatrix();
+        GL11.glCullFace(GL11.GL_BACK);
         if (dummyEntity == null) {
             dummyEntity = new EntityChicken(mc.theWorld);
         }
@@ -165,137 +161,6 @@ public final class BattlegearRenderHelper {
                                     offhandRender.battlegear2$getOffHandItemToRender()));
                     GL11.glPopMatrix();
 
-                } else if (!Loader.isModLoaded("backhand")) {
-                    GL11.glPushMatrix();
-
-                    if (player.getItemInUseCount() > 0) {
-                        EnumAction action = offhandRender.battlegear2$getOffHandItemToRender().getItemUseAction();
-
-                        if (action == EnumAction.eat || action == EnumAction.drink) {
-                            var21 = (float) player.getItemInUseCount() - frame + 1.0F;
-                            var10 = 1.0F - var21 / (float) offhandRender.battlegear2$getOffHandItemToRender()
-                                    .getMaxItemUseDuration();
-                            var11 = 1.0F - var10;
-                            var11 = var11 * var11 * var11;
-                            var11 = var11 * var11 * var11;
-                            var11 = var11 * var11 * var11;
-                            var12 = 1.0F - var11;
-                            GL11.glTranslatef(
-                                    0.0F,
-                                    MathHelper.abs(MathHelper.cos(var21 / 4.0F * (float) Math.PI) * 0.1F)
-                                            * (float) ((double) var10 > 0.2D ? 1 : 0),
-                                    0.0F);
-                            GL11.glTranslatef(var12 * 0.6F, -var12 * 0.5F, 0.0F);
-                            GL11.glRotatef(var12 * 90.0F, 0.0F, 1.0F, 0.0F);
-                            GL11.glRotatef(var12 * 10.0F, 1.0F, 0.0F, 0.0F);
-                            GL11.glRotatef(var12 * 30.0F, 0.0F, 0.0F, 1.0F);
-                        }
-                    } else {
-                        var20 = ((IBattlePlayer) player).battlegear2$getOffSwingProgress(frame);
-                        var21 = MathHelper.sin(var20 * (float) Math.PI);
-                        var10 = MathHelper.sin(MathHelper.sqrt_float(var20) * (float) Math.PI);
-                        // Flip the (x direction)
-                        GL11.glTranslatef(
-                                var10 * 0.4F,
-                                MathHelper.sin(MathHelper.sqrt_float(var20) * (float) Math.PI * 2.0F) * 0.2F,
-                                -var21 * 0.2F);
-                    }
-                    // Translate x in the opposite direction
-                    GL11.glTranslatef(-0.7F * var7, -0.65F * var7 - (1.0F - progress) * 0.6F, -0.9F * var7);
-
-                    // Rotate y in the opposite direction
-                    GL11.glRotatef(-45.0F, 0.0F, 1.0F, 0.0F);
-
-                    GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-                    var20 = ((IBattlePlayer) player).battlegear2$getOffSwingProgress(frame);
-
-                    var21 = MathHelper.sin(var20 * var20 * (float) Math.PI);
-                    var10 = MathHelper.sin(MathHelper.sqrt_float(var20) * (float) Math.PI);
-
-                    GL11.glRotatef(-var21 * 20.0F, 0.0F, 1.0F, 0.0F);
-                    // Rotate z in the opposite direction
-                    GL11.glRotatef(var10 * 20.0F, 0.0F, 0.0F, 1.0F);
-                    GL11.glRotatef(-var10 * 80.0F, 1.0F, 0.0F, 0.0F);
-
-                    // Rotate y back to original position + 45
-                    GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
-
-                    var11 = 0.4F;
-                    GL11.glScalef(var11, var11, var11);
-                    float var14;
-                    float var15;
-
-                    if (player.getItemInUseCount() > 0) {
-                        EnumAction action = offhandRender.battlegear2$getOffHandItemToRender().getItemUseAction();
-
-                        if (action == EnumAction.block) {
-                            GL11.glTranslatef(0.0F, 0.2F, 0.0F);
-                            GL11.glRotatef(30.0F, 0.0F, 1.0F, 0.0F);
-                            GL11.glRotatef(30.0F, 1.0F, 0.0F, 0.0F);
-                            GL11.glRotatef(60.0F, 0.0F, 1.0F, 0.0F);
-                        } else if (action == EnumAction.bow) {
-                            GL11.glRotatef(-18.0F, 0.0F, 0.0F, 1.0F);
-                            GL11.glRotatef(-12.0F, 0.0F, 1.0F, 0.0F);
-                            GL11.glRotatef(-8.0F, 1.0F, 0.0F, 0.0F);
-                            GL11.glTranslatef(-0.9F, 0.2F, 0.0F);
-                            var13 = (float) offhandRender.battlegear2$getOffHandItemToRender().getMaxItemUseDuration()
-                                    - ((float) player.getItemInUseCount() - frame + 1.0F);
-                            var14 = var13 / 20.0F;
-                            var14 = (var14 * var14 + var14 * 2.0F) / 3.0F;
-
-                            if (var14 > 1.0F) {
-                                var14 = 1.0F;
-                            }
-
-                            if (var14 > 0.1F) {
-                                GL11.glTranslatef(
-                                        0.0F,
-                                        MathHelper.sin((var13 - 0.1F) * 1.3F) * 0.01F * (var14 - 0.1F),
-                                        0.0F);
-                            }
-
-                            GL11.glTranslatef(0.0F, 0.0F, var14 * 0.1F);
-                            GL11.glRotatef(-335.0F, 0.0F, 0.0F, 1.0F);
-                            GL11.glRotatef(-50.0F, 0.0F, 1.0F, 0.0F);
-                            GL11.glTranslatef(0.0F, 0.5F, 0.0F);
-                            var15 = 1.0F + var14 * 0.2F;
-                            GL11.glScalef(1.0F, 1.0F, var15);
-                            GL11.glTranslatef(0.0F, -0.5F, 0.0F);
-                            GL11.glRotatef(50.0F, 0.0F, 1.0F, 0.0F);
-                            GL11.glRotatef(335.0F, 0.0F, 0.0F, 1.0F);
-                        }
-                    }
-
-                    if (offhandRender.battlegear2$getOffHandItemToRender().getItem()
-                            .shouldRotateAroundWhenRendering()) {
-                        GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
-                    }
-                    if (!BattlegearUtils.RENDER_BUS.post(
-                            new PreRenderPlayerElement(
-                                    preRender,
-                                    true,
-                                    PlayerElementType.ItemOffhand,
-                                    offhandRender.battlegear2$getOffHandItemToRender()))) {
-
-                        itemRenderer.renderItem(player, offhandRender.battlegear2$getOffHandItemToRender(), 0);
-                        if (offhandRender.battlegear2$getOffHandItemToRender().getItem()
-                                .requiresMultipleRenderPasses()) {
-                            for (int x = 1; x
-                                    < offhandRender.battlegear2$getOffHandItemToRender().getItem().getRenderPasses(
-                                            offhandRender.battlegear2$getOffHandItemToRender().getItemDamage()); x++) {
-                                applyColorFromItemStack(offhandRender.battlegear2$getOffHandItemToRender(), x);
-                                itemRenderer.renderItem(player, offhandRender.battlegear2$getOffHandItemToRender(), x);
-                            }
-                        }
-                    }
-                    BattlegearUtils.RENDER_BUS.post(
-                            new PostRenderPlayerElement(
-                                    postRender,
-                                    true,
-                                    PlayerElementType.ItemOffhand,
-                                    offhandRender.battlegear2$getOffHandItemToRender()));
-
-                    GL11.glPopMatrix();
                 }
             } else if (!player.isInvisible()) {
                 GL11.glPushMatrix();
@@ -340,9 +205,7 @@ public final class BattlegearRenderHelper {
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
             RenderHelper.disableStandardItemLighting();
         }
-        if (Loader.isModLoaded("backhand")) {
-            GL11.glPushMatrix();
-        }
+        GL11.glPushMatrix();
     }
 
     public static void updateEquippedItem(ItemRenderer itemRenderer, Minecraft mc) {
@@ -351,7 +214,9 @@ public final class BattlegearRenderHelper {
                 .battlegear2$setPrevEquippedOffHandProgress(offhandRender.battlegear2$getEquippedOffHandProgress());
         int slot = mc.thePlayer.inventory.currentItem;
         EntityPlayer player = mc.thePlayer;
-        ItemStack offhandStack = (Offhand.isOffhandSlot(slot, player) ? Offhand.getOffhandStack(player) : dummyStack);
+        ItemStack offhandStack;
+        offhandStack = slot == BackhandUtils.getOffhandSlot(player) ? (BackhandUtils.getOffhandItem(player))
+                : (dummyStack);
 
         boolean sameItem = offhandRender.battlegear2$getEquippedItemOffhandSlot() == slot
                 && offhandStack == offhandRender.battlegear2$getOffHandItemToRender();
@@ -393,7 +258,7 @@ public final class BattlegearRenderHelper {
             EntityPlayer player = (EntityPlayer) entity;
             float offhandSwing = 0.0F;
 
-            ItemStack offhand = Offhand.getOffhandStack(player);
+            ItemStack offhand = BackhandUtils.getOffhandItem(player);
             if (offhand != null && offhand.getItem() instanceof IShield) {
                 offhandSwing = (float) battlePlayer.battlegear2$getSpecialActionTimer()
                         / (float) ((IShield) offhand.getItem()).getBashTimer(offhand);
@@ -431,7 +296,7 @@ public final class BattlegearRenderHelper {
 
     public static void renderItemIn3rdPerson(EntityPlayer par1EntityPlayer, ModelBiped modelBipedMain, float frame) {
 
-        ItemStack offhandItem = Offhand.getOffhandStack(par1EntityPlayer);
+        ItemStack offhandItem = BackhandUtils.getOffhandItem(par1EntityPlayer);
 
         if (offhandItem != null && offhandItem.getItem() instanceof IShield) {
 

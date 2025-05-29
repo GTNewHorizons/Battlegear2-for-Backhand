@@ -24,7 +24,6 @@ import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import mods.battlegear2.Offhand;
 import mods.battlegear2.api.EnchantmentHelper;
 import mods.battlegear2.api.IDyable;
 import mods.battlegear2.api.RenderItemBarEvent;
@@ -41,6 +40,7 @@ import mods.battlegear2.client.utils.BattlegearRenderHelper;
 import mods.battlegear2.enchantments.BaseEnchantment;
 import mods.battlegear2.items.ItemWeapon;
 import mods.battlegear2.utils.BattlegearConfig;
+import xonin.backhand.api.core.BackhandUtils;
 
 public final class BattlegearClientEvents {
 
@@ -96,7 +96,7 @@ public final class BattlegearClientEvents {
     @SubscribeEvent(priority = EventPriority.LOW)
     public void renderPlayerLeftItemUsage(RenderLivingEvent.Pre event) {
         if (event.entity instanceof EntityPlayer entityPlayer) {
-            ItemStack offhand = Offhand.getOffhandStack(entityPlayer);
+            ItemStack offhand = BackhandUtils.getOffhandItem(entityPlayer);
             if (offhand != null && event.renderer instanceof RenderPlayer renderer) {
                 if (((IBattlePlayer) entityPlayer).battlegear2$isBlockingWithShield()) {
                     renderer.modelArmorChestplate.heldItemLeft = renderer.modelArmor.heldItemLeft = renderer.modelBipedMain.heldItemLeft = 3;

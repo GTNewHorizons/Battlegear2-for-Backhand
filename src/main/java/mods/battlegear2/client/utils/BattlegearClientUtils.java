@@ -3,8 +3,8 @@ package mods.battlegear2.client.utils;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.item.ItemStack;
 
-import mods.battlegear2.Offhand;
 import mods.battlegear2.api.core.BattlegearUtils;
+import xonin.backhand.api.core.BackhandUtils;
 
 public final class BattlegearClientUtils {
 
@@ -17,7 +17,7 @@ public final class BattlegearClientUtils {
      */
     public static boolean entityOtherPlayerIsItemInUseHook(EntityOtherPlayerMP player, boolean isItemInUse) {
         ItemStack itemStack = player.getCurrentEquippedItem();
-        ItemStack offhand = Offhand.getOffhandStack(player);
+        ItemStack offhand = BackhandUtils.getOffhandItem(player);
         if (offhand != null && BattlegearUtils.usagePriorAttack(offhand, player, true)) itemStack = offhand;
         if (!isItemInUse && player.isEating() && itemStack != null) {
             player.setItemInUse(itemStack, itemStack.getMaxItemUseDuration());

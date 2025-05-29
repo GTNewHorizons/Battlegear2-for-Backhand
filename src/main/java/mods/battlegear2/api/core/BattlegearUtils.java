@@ -31,7 +31,6 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 
 import cpw.mods.fml.common.eventhandler.EventBus;
-import mods.battlegear2.Offhand;
 import mods.battlegear2.api.IAllowItem;
 import mods.battlegear2.api.IOffhandDual;
 import mods.battlegear2.api.IOffhandWield;
@@ -80,7 +79,7 @@ public class BattlegearUtils {
      * Helper method to check if player can use {@link IShield}
      */
     public static boolean canBlockWithShield(EntityPlayer player) {
-        ItemStack offhand = Offhand.getOffhandStack(player);
+        ItemStack offhand = BackhandUtils.getOffhandItem(player);
         return offhand != null && offhand.getItem() instanceof IShield;
     }
 
@@ -450,7 +449,7 @@ public class BattlegearUtils {
         if (itemStack == entityPlayer.getCurrentEquippedItem()) {
             entityPlayer.destroyCurrentEquippedItem();
         } else {
-            ItemStack orig = Offhand.getOffhandStack(entityPlayer);
+            ItemStack orig = BackhandUtils.getOffhandItem(entityPlayer);
             if (orig == itemStack) {
                 setPlayerOffhandItem(entityPlayer, null);
                 ForgeEventFactory.onPlayerDestroyItem(entityPlayer, orig);

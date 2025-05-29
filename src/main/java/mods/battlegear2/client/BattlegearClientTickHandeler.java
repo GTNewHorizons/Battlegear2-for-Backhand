@@ -15,7 +15,6 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 import mods.battlegear2.Battlegear;
-import mods.battlegear2.Offhand;
 import mods.battlegear2.api.EnchantmentHelper;
 import mods.battlegear2.api.core.IBattlePlayer;
 import mods.battlegear2.api.quiver.QuiverArrowRegistry;
@@ -24,6 +23,7 @@ import mods.battlegear2.enchantments.BaseEnchantment;
 import mods.battlegear2.packet.BattlegearAnimationPacket;
 import mods.battlegear2.packet.BattlegearShieldBlockPacket;
 import mods.battlegear2.utils.EnumBGAnimations;
+import xonin.backhand.api.core.BackhandUtils;
 
 public final class BattlegearClientTickHandeler {
 
@@ -62,7 +62,7 @@ public final class BattlegearClientTickHandeler {
                         Battlegear.packetHandler.sendPacketToServer(p);
                         ((IBattlePlayer) player).battlegear2$setSpecialActionTimer(2);
                     } else {
-                        ItemStack offhand = Offhand.getOffhandStack(player);
+                        ItemStack offhand = BackhandUtils.getOffhandItem(player);
 
                         if (offhand != null && offhand.getItem() instanceof IShield) {
                             float shieldBashPenalty = 0.33F - 0.06F
@@ -97,7 +97,7 @@ public final class BattlegearClientTickHandeler {
     }
 
     private void tickStart(EntityPlayer player) {
-        ItemStack offhand = Offhand.getOffhandStack(player);
+        ItemStack offhand = BackhandUtils.getOffhandItem(player);
         if (offhand != null) {
             if (offhand.getItem() instanceof IShield) {
                 if (flashTimer == FLASH_MAX) {

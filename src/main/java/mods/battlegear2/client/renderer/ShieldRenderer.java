@@ -10,7 +10,6 @@ import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.common.Loader;
 import mods.battlegear2.client.utils.BattlegearRenderHelper;
 import mods.battlegear2.items.ItemShield;
 import xonin.backhand.compat.IOffhandRenderOptOut;
@@ -95,9 +94,7 @@ public class ShieldRenderer implements IItemRenderer, IOffhandRenderOptOut {
 
                 break;
             case EQUIPPED_FIRST_PERSON:
-                if (Loader.isModLoaded("backhand")) {
-                    break;
-                }
+                break;
             case EQUIPPED:
                 GL11.glColor3f(red, green, blue);
                 ItemRenderer.renderItemIn2D(

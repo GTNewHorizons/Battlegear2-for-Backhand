@@ -17,6 +17,7 @@ import mods.battlegear2.api.core.BattlegearUtils;
 import mods.battlegear2.items.ItemMBArrow;
 import mods.battlegear2.items.arrows.AbstractMBArrow;
 import mods.battlegear2.utils.BattlegearConfig;
+import xonin.backhand.api.core.BackhandUtils;
 
 public final class MobHookContainerClass {
 
@@ -95,7 +96,7 @@ public final class MobHookContainerClass {
                     }
                 }
             } else if (arrow.shootingEntity instanceof EntityPlayer player) {
-                ItemStack offhand = Offhand.getOffhandStack(player);
+                ItemStack offhand = BackhandUtils.getOffhandItem(player);
                 if (offhand != null && BattlegearUtils.isBow(offhand.getItem())) {
                     arrow.setPosition(
                             arrow.posX + 2 * (double) (MathHelper

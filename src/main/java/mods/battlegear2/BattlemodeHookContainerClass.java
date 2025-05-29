@@ -40,6 +40,7 @@ import mods.battlegear2.api.weapons.IExtendedReachWeapon;
 import mods.battlegear2.enchantments.BaseEnchantment;
 import mods.battlegear2.packet.BattlegearShieldFlashPacket;
 import mods.battlegear2.utils.EnumBGAnimations;
+import xonin.backhand.api.core.BackhandUtils;
 import xonin.backhand.api.core.IOffhandInventory;
 
 public final class BattlemodeHookContainerClass {
@@ -90,7 +91,7 @@ public final class BattlemodeHookContainerClass {
                     PlayerInteractEvent copy = copy(event);
                     copy.useItem = Event.Result.DENY;
                     Event.Result swing = ((IHandListener) mainHandItem.getItem())
-                            .onClickBlock(copy, mainHandItem, Offhand.getOffhandStack(event.entityPlayer), false);
+                            .onClickBlock(copy, mainHandItem, BackhandUtils.getOffhandItem(event.entityPlayer), false);
                     if (swing != Event.Result.DEFAULT) {
                         event.entityPlayer.isSwingInProgress = false;
                     }
@@ -103,7 +104,7 @@ public final class BattlemodeHookContainerClass {
                 }
                 // TODO-Backhand-Compat: Is this branch needed?
             } else { // Right click
-                ItemStack offhandItem = Offhand.getOffhandStack(event.entityPlayer);
+                ItemStack offhandItem = BackhandUtils.getOffhandItem(event.entityPlayer);
                 if (offhandItem == null) {
                     sendOffSwingEvent(event, null, null);
                 } else if (BattlegearUtils.usagePriorAttack(offhandItem, event.entityPlayer, true)) {
@@ -312,7 +313,7 @@ public final class BattlemodeHookContainerClass {
             if (((IBattlePlayer) player).battlegear2$getSpecialActionTimer() > 0) {
                 event.setCanceled(true);
             } else if (((IBattlePlayer) player).battlegear2$isBlockingWithShield()) {
-                final ItemStack shield = Offhand.getOffhandStack(player);
+                final ItemStack shield = BackhandUtils.getOffhandItem(player);
                 final float dmg = event.ammount;
                 if (((IShield) shield.getItem()).canBlock(shield, event.source)) {
                     boolean shouldBlock = true;
@@ -407,7 +408,7 @@ public final class BattlemodeHookContainerClass {
                     && event.source.getEntity() instanceof IBattlePlayer
                     && !isFake(event.source.getEntity())) {
                 EntityPlayer player = (EntityPlayer) event.source.getEntity();
-                stack = Offhand.getOffhandStack(player);
+                stack = BackhandUtils.getOffhandItem(player);
                 addLootFromEnchant(stack, event.drops);
             }
         }

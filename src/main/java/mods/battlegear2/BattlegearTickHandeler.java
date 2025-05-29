@@ -8,6 +8,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import mods.battlegear2.api.core.IBattlePlayer;
 import mods.battlegear2.api.quiver.QuiverArrowRegistry;
 import mods.battlegear2.api.shield.IShield;
+import xonin.backhand.api.core.BackhandUtils;
 
 public final class BattlegearTickHandeler {
 
@@ -50,7 +51,7 @@ public final class BattlegearTickHandeler {
         if (timer > 0) {
             ((IBattlePlayer) entityPlayer).battlegear2$setSpecialActionTimer(timer - 1);
             int targetTime = -1;
-            ItemStack offhand = Offhand.getOffhandStack(entityPlayer);
+            ItemStack offhand = BackhandUtils.getOffhandItem(entityPlayer);
             if (offhand != null && offhand.getItem() instanceof IShield) {
                 targetTime = ((IShield) offhand.getItem()).getBashTimer(offhand) / 2;
             } else {

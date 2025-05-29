@@ -21,6 +21,7 @@ import mods.battlegear2.api.quiver.ISpecialBow;
 import mods.battlegear2.api.quiver.QuiverArrowRegistry;
 import mods.battlegear2.enchantments.BaseEnchantment;
 import mods.battlegear2.items.arrows.AbstractMBArrow;
+import xonin.backhand.api.core.BackhandUtils;
 
 public final class BowHookContainerClass2 {
 
@@ -36,7 +37,7 @@ public final class BowHookContainerClass2 {
 
         @Override
         public ItemStack getQuiverFor(ItemStack bow, EntityPlayer player) {
-            ItemStack offhand = Offhand.getOffhandStack(player);
+            ItemStack offhand = BackhandUtils.getOffhandItem(player);
             if (bow != offhand) return isLoadedContainer(offhand, bow, player) ? offhand : null;
             else {
                 offhand = player.getCurrentEquippedItem();
