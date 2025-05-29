@@ -1,4 +1,4 @@
-Mine and Blade : Battlegear - 2 - GTNH
+Mine and Blade : Battlegear - 2 - GTNH - Backhand Edition
 ======================================
 
 ![](bg-logo.png)
@@ -9,7 +9,9 @@ Forge Version: 1.7.10-10.13.4.1614
 This is the second iteration of Mine & Blade: Battlegear, the popular dual-wielding and combat mod for Minecraft.
 The mod has a heavy dependency on the use of ASM (coremod) to edit the bytecode of the minecraft base classes. 
 
-This the fork maintained for GTNH - please report any issues to the [GTNH GitHub](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack/issues)
+This the fork maintained for GTNH - please report any issues to the [GTNH GitHub](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack/issues).
+
+This version depends on [Backhand](https://github.com/GTNewHorizons/Backhand) and doesn't have any dedicated equipment slots.
 
 License
 -------
