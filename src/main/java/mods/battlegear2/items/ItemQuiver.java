@@ -25,6 +25,7 @@ import mods.battlegear2.api.PlayerEventChild;
 import mods.battlegear2.api.core.BattlegearUtils;
 import mods.battlegear2.api.quiver.IArrowContainer2;
 import mods.battlegear2.api.quiver.QuiverArrowRegistry;
+import xonin.backhand.api.core.BackhandUtils;
 
 public class ItemQuiver extends Item implements IArrowContainer2, IDyable {
 
@@ -48,6 +49,7 @@ public class ItemQuiver extends Item implements IArrowContainer2, IDyable {
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side,
             float offX, float offY, float offZ) {
+        if (BackhandUtils.getOffhandItem(player) == stack) return false;
         boolean flag = false;
         for (int i = 0; i < getSlotCount(stack); i++) {
             ItemStack temp = getStackInSlot(stack, i);

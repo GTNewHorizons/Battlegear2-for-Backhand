@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -19,6 +20,7 @@ import com.google.common.collect.Sets;
 
 import cpw.mods.fml.common.event.FMLInterModComms;
 import mods.battlegear2.api.ISensible;
+import mods.battlegear2.api.IUsableItem;
 import mods.battlegear2.api.StackHolder;
 
 /**

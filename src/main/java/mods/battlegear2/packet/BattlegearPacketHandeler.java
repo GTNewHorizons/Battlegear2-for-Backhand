@@ -21,7 +21,6 @@ public final class BattlegearPacketHandeler {
     private final Map<String, FMLEventChannel> channels = new Hashtable<String, FMLEventChannel>();
 
     public BattlegearPacketHandeler() {
-        map.put(BattlegearSyncItemPacket.packetName, new BattlegearSyncItemPacket());
         map.put(BattlegearAnimationPacket.packetName, new BattlegearAnimationPacket());
         map.put(BattlegearBannerPacket.packetName, new BattlegearBannerPacket());
         map.put(BattlegearChangeHeraldryPacket.packetName, new BattlegearChangeHeraldryPacket());
@@ -29,9 +28,6 @@ public final class BattlegearPacketHandeler {
         map.put(BattlegearShieldBlockPacket.packetName, new BattlegearShieldBlockPacket());
         map.put(BattlegearShieldFlashPacket.packetName, new BattlegearShieldFlashPacket());
         map.put(SpecialActionPacket.packetName, new SpecialActionPacket());
-        map.put(LoginPacket.packetName, new LoginPacket());
-        map.put(OffhandPlaceBlockPacket.packetName, new OffhandPlaceBlockPacket());
-        map.put(PickBlockPacket.packetName, new PickBlockPacket());
         map.put(WieldSetPacket.packetName, new WieldSetPacket());
     }
 

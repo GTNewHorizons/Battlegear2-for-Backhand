@@ -1,15 +1,10 @@
 package mods.battlegear2.client.utils;
 
-import static net.minecraftforge.client.IItemRenderer.ItemRenderType.EQUIPPED;
-import static net.minecraftforge.client.IItemRenderer.ItemRendererHelper.BLOCK_3D;
-
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -19,36 +14,23 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.EnumAction;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import mods.battlegear2.api.IBackSheathedRender;
-import mods.battlegear2.api.ISheathed;
 import mods.battlegear2.api.RenderPlayerEventChild.PlayerElementType;
 import mods.battlegear2.api.RenderPlayerEventChild.PostRenderPlayerElement;
-import mods.battlegear2.api.RenderPlayerEventChild.PostRenderSheathed;
 import mods.battlegear2.api.RenderPlayerEventChild.PreRenderPlayerElement;
-import mods.battlegear2.api.RenderPlayerEventChild.PreRenderSheathed;
 import mods.battlegear2.api.core.BattlegearUtils;
 import mods.battlegear2.api.core.IBattlePlayer;
-import mods.battlegear2.api.core.IInventoryPlayerBattle;
 import mods.battlegear2.api.core.IOffhandRender;
 import mods.battlegear2.api.shield.IArrowDisplay;
 import mods.battlegear2.api.shield.IShield;
-import mods.battlegear2.client.BattlegearClientTickHandeler;
-import mods.battlegear2.utils.BattlegearConfig;
-import mods.battlegear2.utils.Sheath;
+import xonin.backhand.api.core.BackhandUtils;
 
 public final class BattlegearRenderHelper {
 
@@ -81,7 +63,8 @@ public final class BattlegearRenderHelper {
     }
 
     public static void renderItemInFirstPerson(float frame, Minecraft mc, ItemRenderer itemRenderer) {
-
+        GL11.glPopMatrix();
+        GL11.glCullFace(GL11.GL_BACK);
         if (dummyEntity == null) {
             dummyEntity = new EntityChicken(mc.theWorld);
         }
@@ -178,137 +161,6 @@ public final class BattlegearRenderHelper {
                                     offhandRender.battlegear2$getOffHandItemToRender()));
                     GL11.glPopMatrix();
 
-                } else {
-                    GL11.glPushMatrix();
-
-                    if (player.getItemInUseCount() > 0) {
-                        EnumAction action = offhandRender.battlegear2$getOffHandItemToRender().getItemUseAction();
-
-                        if (action == EnumAction.eat || action == EnumAction.drink) {
-                            var21 = (float) player.getItemInUseCount() - frame + 1.0F;
-                            var10 = 1.0F - var21 / (float) offhandRender.battlegear2$getOffHandItemToRender()
-                                    .getMaxItemUseDuration();
-                            var11 = 1.0F - var10;
-                            var11 = var11 * var11 * var11;
-                            var11 = var11 * var11 * var11;
-                            var11 = var11 * var11 * var11;
-                            var12 = 1.0F - var11;
-                            GL11.glTranslatef(
-                                    0.0F,
-                                    MathHelper.abs(MathHelper.cos(var21 / 4.0F * (float) Math.PI) * 0.1F)
-                                            * (float) ((double) var10 > 0.2D ? 1 : 0),
-                                    0.0F);
-                            GL11.glTranslatef(var12 * 0.6F, -var12 * 0.5F, 0.0F);
-                            GL11.glRotatef(var12 * 90.0F, 0.0F, 1.0F, 0.0F);
-                            GL11.glRotatef(var12 * 10.0F, 1.0F, 0.0F, 0.0F);
-                            GL11.glRotatef(var12 * 30.0F, 0.0F, 0.0F, 1.0F);
-                        }
-                    } else {
-                        var20 = ((IBattlePlayer) player).battlegear2$getOffSwingProgress(frame);
-                        var21 = MathHelper.sin(var20 * (float) Math.PI);
-                        var10 = MathHelper.sin(MathHelper.sqrt_float(var20) * (float) Math.PI);
-                        // Flip the (x direction)
-                        GL11.glTranslatef(
-                                var10 * 0.4F,
-                                MathHelper.sin(MathHelper.sqrt_float(var20) * (float) Math.PI * 2.0F) * 0.2F,
-                                -var21 * 0.2F);
-                    }
-                    // Translate x in the opposite direction
-                    GL11.glTranslatef(-0.7F * var7, -0.65F * var7 - (1.0F - progress) * 0.6F, -0.9F * var7);
-
-                    // Rotate y in the opposite direction
-                    GL11.glRotatef(-45.0F, 0.0F, 1.0F, 0.0F);
-
-                    GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-                    var20 = ((IBattlePlayer) player).battlegear2$getOffSwingProgress(frame);
-
-                    var21 = MathHelper.sin(var20 * var20 * (float) Math.PI);
-                    var10 = MathHelper.sin(MathHelper.sqrt_float(var20) * (float) Math.PI);
-
-                    GL11.glRotatef(-var21 * 20.0F, 0.0F, 1.0F, 0.0F);
-                    // Rotate z in the opposite direction
-                    GL11.glRotatef(var10 * 20.0F, 0.0F, 0.0F, 1.0F);
-                    GL11.glRotatef(-var10 * 80.0F, 1.0F, 0.0F, 0.0F);
-
-                    // Rotate y back to original position + 45
-                    GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
-
-                    var11 = 0.4F;
-                    GL11.glScalef(var11, var11, var11);
-                    float var14;
-                    float var15;
-
-                    if (player.getItemInUseCount() > 0) {
-                        EnumAction action = offhandRender.battlegear2$getOffHandItemToRender().getItemUseAction();
-
-                        if (action == EnumAction.block) {
-                            GL11.glTranslatef(0.0F, 0.2F, 0.0F);
-                            GL11.glRotatef(30.0F, 0.0F, 1.0F, 0.0F);
-                            GL11.glRotatef(30.0F, 1.0F, 0.0F, 0.0F);
-                            GL11.glRotatef(60.0F, 0.0F, 1.0F, 0.0F);
-                        } else if (action == EnumAction.bow) {
-                            GL11.glRotatef(-18.0F, 0.0F, 0.0F, 1.0F);
-                            GL11.glRotatef(-12.0F, 0.0F, 1.0F, 0.0F);
-                            GL11.glRotatef(-8.0F, 1.0F, 0.0F, 0.0F);
-                            GL11.glTranslatef(-0.9F, 0.2F, 0.0F);
-                            var13 = (float) offhandRender.battlegear2$getOffHandItemToRender().getMaxItemUseDuration()
-                                    - ((float) player.getItemInUseCount() - frame + 1.0F);
-                            var14 = var13 / 20.0F;
-                            var14 = (var14 * var14 + var14 * 2.0F) / 3.0F;
-
-                            if (var14 > 1.0F) {
-                                var14 = 1.0F;
-                            }
-
-                            if (var14 > 0.1F) {
-                                GL11.glTranslatef(
-                                        0.0F,
-                                        MathHelper.sin((var13 - 0.1F) * 1.3F) * 0.01F * (var14 - 0.1F),
-                                        0.0F);
-                            }
-
-                            GL11.glTranslatef(0.0F, 0.0F, var14 * 0.1F);
-                            GL11.glRotatef(-335.0F, 0.0F, 0.0F, 1.0F);
-                            GL11.glRotatef(-50.0F, 0.0F, 1.0F, 0.0F);
-                            GL11.glTranslatef(0.0F, 0.5F, 0.0F);
-                            var15 = 1.0F + var14 * 0.2F;
-                            GL11.glScalef(1.0F, 1.0F, var15);
-                            GL11.glTranslatef(0.0F, -0.5F, 0.0F);
-                            GL11.glRotatef(50.0F, 0.0F, 1.0F, 0.0F);
-                            GL11.glRotatef(335.0F, 0.0F, 0.0F, 1.0F);
-                        }
-                    }
-
-                    if (offhandRender.battlegear2$getOffHandItemToRender().getItem()
-                            .shouldRotateAroundWhenRendering()) {
-                        GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
-                    }
-                    if (!BattlegearUtils.RENDER_BUS.post(
-                            new PreRenderPlayerElement(
-                                    preRender,
-                                    true,
-                                    PlayerElementType.ItemOffhand,
-                                    offhandRender.battlegear2$getOffHandItemToRender()))) {
-
-                        itemRenderer.renderItem(player, offhandRender.battlegear2$getOffHandItemToRender(), 0);
-                        if (offhandRender.battlegear2$getOffHandItemToRender().getItem()
-                                .requiresMultipleRenderPasses()) {
-                            for (int x = 1; x
-                                    < offhandRender.battlegear2$getOffHandItemToRender().getItem().getRenderPasses(
-                                            offhandRender.battlegear2$getOffHandItemToRender().getItemDamage()); x++) {
-                                applyColorFromItemStack(offhandRender.battlegear2$getOffHandItemToRender(), x);
-                                itemRenderer.renderItem(player, offhandRender.battlegear2$getOffHandItemToRender(), x);
-                            }
-                        }
-                    }
-                    BattlegearUtils.RENDER_BUS.post(
-                            new PostRenderPlayerElement(
-                                    postRender,
-                                    true,
-                                    PlayerElementType.ItemOffhand,
-                                    offhandRender.battlegear2$getOffHandItemToRender()));
-
-                    GL11.glPopMatrix();
                 }
             } else if (!player.isInvisible()) {
                 GL11.glPushMatrix();
@@ -353,29 +205,31 @@ public final class BattlegearRenderHelper {
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
             RenderHelper.disableStandardItemLighting();
         }
+        GL11.glPushMatrix();
     }
 
     public static void updateEquippedItem(ItemRenderer itemRenderer, Minecraft mc) {
         IOffhandRender offhandRender = (IOffhandRender) itemRenderer;
         offhandRender
                 .battlegear2$setPrevEquippedOffHandProgress(offhandRender.battlegear2$getEquippedOffHandProgress());
-        int slot = mc.thePlayer.inventory.currentItem + IInventoryPlayerBattle.WEAPON_SETS;
-        EntityPlayer var1 = mc.thePlayer;
-        ItemStack var2 = ((IBattlePlayer) var1).battlegear2$isBattlemode() ? var1.inventory.getStackInSlot(slot)
-                : dummyStack;
+        int slot = mc.thePlayer.inventory.currentItem;
+        EntityPlayer player = mc.thePlayer;
+        ItemStack offhandStack;
+        offhandStack = slot == BackhandUtils.getOffhandSlot(player) ? (BackhandUtils.getOffhandItem(player))
+                : (dummyStack);
 
         boolean sameItem = offhandRender.battlegear2$getEquippedItemOffhandSlot() == slot
-                && var2 == offhandRender.battlegear2$getOffHandItemToRender();
+                && offhandStack == offhandRender.battlegear2$getOffHandItemToRender();
 
-        if (offhandRender.battlegear2$getOffHandItemToRender() == null && var2 == null) {
+        if (offhandRender.battlegear2$getOffHandItemToRender() == null && offhandStack == null) {
             sameItem = true;
         }
 
-        if (var2 != null && offhandRender.battlegear2$getOffHandItemToRender() != null
-                && var2 != offhandRender.battlegear2$getOffHandItemToRender()
-                && var2.getItem() == offhandRender.battlegear2$getOffHandItemToRender().getItem()
-                && var2.getItemDamage() == offhandRender.battlegear2$getOffHandItemToRender().getItemDamage()) {
-            offhandRender.battlegear2$setOffHandItemToRender(var2);
+        if (offhandStack != null && offhandRender.battlegear2$getOffHandItemToRender() != null
+                && offhandStack != offhandRender.battlegear2$getOffHandItemToRender()
+                && offhandStack.getItem() == offhandRender.battlegear2$getOffHandItemToRender().getItem()
+                && offhandStack.getItemDamage() == offhandRender.battlegear2$getOffHandItemToRender().getItemDamage()) {
+            offhandRender.battlegear2$setOffHandItemToRender(offhandStack);
             sameItem = true;
         }
 
@@ -393,25 +247,23 @@ public final class BattlegearRenderHelper {
                 offhandRender.battlegear2$getEquippedOffHandProgress() + increment);
 
         if (offhandRender.battlegear2$getEquippedOffHandProgress() < 0.1F) {
-            offhandRender.battlegear2$setOffHandItemToRender(var2);
+            offhandRender.battlegear2$setOffHandItemToRender(offhandStack);
             offhandRender.battlegear2$serEquippedItemOffhandSlot(slot);
         }
     }
 
     public static void moveOffHandArm(Entity entity, ModelBiped biped, float frame) {
         if (entity instanceof IBattlePlayer) {
-            IBattlePlayer player = (IBattlePlayer) entity;
+            IBattlePlayer battlePlayer = (IBattlePlayer) entity;
+            EntityPlayer player = (EntityPlayer) entity;
             float offhandSwing = 0.0F;
 
-            if (player.battlegear2$isBattlemode()) {
-                ItemStack offhand = ((IInventoryPlayerBattle) ((EntityPlayer) entity).inventory)
-                        .battlegear2$getCurrentOffhandWeapon();
-                if (offhand != null && offhand.getItem() instanceof IShield) {
-                    offhandSwing = (float) player.battlegear2$getSpecialActionTimer()
-                            / (float) ((IShield) offhand.getItem()).getBashTimer(offhand);
-                } else {
-                    offhandSwing = player.battlegear2$getOffSwingProgress(frame);
-                }
+            ItemStack offhand = BackhandUtils.getOffhandItem(player);
+            if (offhand != null && offhand.getItem() instanceof IShield) {
+                offhandSwing = (float) battlePlayer.battlegear2$getSpecialActionTimer()
+                        / (float) ((IShield) offhand.getItem()).getBashTimer(offhand);
+            } else {
+                offhandSwing = battlePlayer.battlegear2$getOffSwingProgress(frame);
             }
 
             if (offhandSwing > 0.0F) {
@@ -444,9 +296,9 @@ public final class BattlegearRenderHelper {
 
     public static void renderItemIn3rdPerson(EntityPlayer par1EntityPlayer, ModelBiped modelBipedMain, float frame) {
 
-        ItemStack var21 = ((IInventoryPlayerBattle) par1EntityPlayer.inventory).battlegear2$getCurrentOffhandWeapon();
+        ItemStack offhandItem = BackhandUtils.getOffhandItem(par1EntityPlayer);
 
-        if (var21 != null) {
+        if (offhandItem != null && offhandItem.getItem() instanceof IShield) {
 
             float var7;
             RenderPlayer render = (RenderPlayer) RenderManager.instance.getEntityRenderObject(par1EntityPlayer);
@@ -460,206 +312,21 @@ public final class BattlegearRenderHelper {
 
             GL11.glTranslatef(RENDER_UNIT, 7 * RENDER_UNIT, RENDER_UNIT);
 
-            if (par1EntityPlayer.fishEntity != null) {
-                var21 = new ItemStack(Items.stick);
-            }
+            var7 = 10 * RENDER_UNIT;
+            GL11.glScalef(var7, -var7, var7);
 
-            EnumAction var23 = null;
+            GL11.glTranslated(8 * RENDER_UNIT, -11 * RENDER_UNIT, -RENDER_UNIT);
 
-            if (par1EntityPlayer.getItemInUseCount() > 0) {
-                var23 = var21.getItemUseAction();
-            }
-
-            IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(var21, EQUIPPED);
-            boolean is3D = (customRenderer != null && customRenderer.shouldUseRenderHelper(EQUIPPED, var21, BLOCK_3D));
-
-            if (var21.getItem() instanceof IShield) {
-                var7 = 10 * RENDER_UNIT;
-                GL11.glScalef(var7, -var7, var7);
-
-                GL11.glTranslated(8 * RENDER_UNIT, -11 * RENDER_UNIT, -RENDER_UNIT);
-
-                GL11.glRotatef(-10.0F, 1.0F, 0.0F, 0.0F);
-                GL11.glRotatef(-45.0F, 0.0F, 1.0F, 0.0F);
-                GL11.glRotatef(25.0F, 0.0F, 0.0F, 1.0F);
-                if (!BattlegearUtils.RENDER_BUS
-                        .post(new PreRenderPlayerElement(preRender, false, PlayerElementType.ItemOffhand, var21))) {
-                    renderItemAllPasses(par1EntityPlayer, var21);
-                }
-            } else {
-
-                if (var21.getItem() instanceof ItemBlock && (is3D
-                        || RenderBlocks.renderItemIn3d(Block.getBlockFromItem(var21.getItem()).getRenderType()))) {
-                    GL11.glTranslatef(0.0F, 3 * RENDER_UNIT, -5 * RENDER_UNIT);
-                    var7 = 0.5F * 0.75F;
-                    GL11.glRotatef(20.0F, 1.0F, 0.0F, 0.0F);
-                    GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-                    GL11.glScalef(-var7, -var7, var7);
-                } else if (BattlegearUtils.isBow(var21.getItem())) {
-                    var7 = 10 * RENDER_UNIT;
-                    GL11.glTranslatef(0, 2 * RENDER_UNIT, 5 * RENDER_UNIT);
-                    GL11.glRotatef(-20.0F, 0.0F, 1.0F, 0.0F);
-                    GL11.glScalef(var7, -var7, var7);
-                    GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
-                    GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-                } else if (var21.getItem().isFull3D()) {
-                    var7 = 10 * RENDER_UNIT;
-
-                    if (var21.getItem().shouldRotateAroundWhenRendering()) {
-                        GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);
-                        GL11.glTranslatef(0, -2 * RENDER_UNIT, 0);
-                    }
-
-                    if (par1EntityPlayer.getItemInUseCount() > 0 && var23 == EnumAction.block) {
-                        GL11.glTranslatef(-0.05F, 0.0F, -0.1F);
-                        GL11.glRotatef(50.0F, 0.0F, 1.0F, 0.0F);
-                        GL11.glRotatef(10.0F, 1.0F, 0.0F, 0.0F);
-                        GL11.glRotatef(40.0F, 0.0F, 0.0F, 1.0F);
-                    }
-
-                    GL11.glTranslatef(0, 3 * RENDER_UNIT, 0);
-                    GL11.glScalef(var7, -var7, var7);
-                    GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
-                    GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-                } else {
-                    var7 = 6 * RENDER_UNIT;
-                    GL11.glTranslatef(4 * RENDER_UNIT, 3 * RENDER_UNIT, -3 * RENDER_UNIT);
-                    GL11.glScalef(var7, var7, var7);
-                    GL11.glRotatef(60.0F, 0.0F, 0.0F, 1.0F);
-                    GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
-                    GL11.glRotatef(20.0F, 0.0F, 0.0F, 1.0F);
-                }
-
-                if (!BattlegearUtils.RENDER_BUS
-                        .post(new PreRenderPlayerElement(preRender, false, PlayerElementType.ItemOffhand, var21))) {
-                    renderItemAllPasses(par1EntityPlayer, var21);
-                }
-            }
-            BattlegearUtils.RENDER_BUS
-                    .post(new PostRenderPlayerElement(postRender, false, PlayerElementType.ItemOffhand, var21));
-            GL11.glPopMatrix();
-        } else {
-            if (!((IBattlePlayer) par1EntityPlayer).battlegear2$isBattlemode())
-                renderSheathedItems(par1EntityPlayer, modelBipedMain, frame);
-        }
-    }
-
-    private static void renderSheathedItems(EntityPlayer par1EntityPlayer, ModelBiped modelBipedMain, float frame) {
-        if (BattlegearConfig.forceSheath == Sheath.NONE) return;
-        ItemStack mainhandSheathed = BattlegearClientTickHandeler.getPreviousMainhand(par1EntityPlayer);
-        ItemStack offhandSheathed = BattlegearClientTickHandeler.getPreviousOffhand(par1EntityPlayer);
-
-        RenderPlayer render = (RenderPlayer) RenderManager.instance.getEntityRenderObject(par1EntityPlayer);
-        ModelBiped chestModel = render.modelArmorChestplate;
-        ModelBiped legsModel = render.modelArmor;
-
-        boolean hasChestArmour = false;
-        boolean hasLegArmour = false;
-        ItemStack chest = par1EntityPlayer.getEquipmentInSlot(3);
-        if (chest != null) {
-            chestModel = ForgeHooksClient.getArmorModel(par1EntityPlayer, chest, 1, chestModel);
-            hasChestArmour = true;
-        }
-        ItemStack legs = par1EntityPlayer.getEquipmentInSlot(2);
-        if (legs != null) {
-            legsModel = ForgeHooksClient.getArmorModel(par1EntityPlayer, legs, 2, legsModel);
-            hasLegArmour = true;
-        }
-
-        int backCount = hasChestArmour ? 1 : 0;
-        RenderPlayerEvent preRender = new RenderPlayerEvent.Pre(par1EntityPlayer, render, frame);
-        RenderPlayerEvent postRender = new RenderPlayerEvent.Post(par1EntityPlayer, render, frame);
-
-        if (mainhandSheathed != null && !(mainhandSheathed.getItem() instanceof ItemBlock)) {
-
-            boolean onBack = isBackSheathed(mainhandSheathed);
-
-            ModelBiped target = modelBipedMain;
-            if (chestModel != null) {
-                target = chestModel;
-            } else if (legsModel != null && !onBack) {
-                target = legsModel;
-            }
-
-            GL11.glPushMatrix();
-            target.bipedBody.postRender(RENDER_UNIT);
-            if (onBack) {
-                if (mainhandSheathed.getItem() instanceof IBackSheathedRender) {
-                    ((IBackSheathedRender) mainhandSheathed.getItem())
-                            .preRenderBackSheathed(mainhandSheathed, backCount, preRender, true);
-                } else {
-                    GL11.glScalef(0.6F, 0.6F, 0.6F);
-                }
-                GL11.glTranslatef(-8 * RENDER_UNIT, 0, 6 * RENDER_UNIT);
-                GL11.glRotatef(-5F, 0.0F, 0.0F, 1.0F);
-                GL11.glRotatef(130.0F, 0.0F, 1.0F, 0.0F);
-                GL11.glTranslatef(0, 0, 4 * RENDER_UNIT - backCount * 2 * RENDER_UNIT);
-                backCount++;
-            } else {
-                GL11.glScalef(0.6F, 0.6F, 0.6F);
-                GL11.glTranslatef(8 * RENDER_UNIT, 1, -4 * RENDER_UNIT);
-                if (hasChestArmour || hasLegArmour) {
-                    GL11.glTranslatef(2 * RENDER_UNIT, 0, 0);
-                }
-                GL11.glRotatef(35F, 1.0F, 0.0F, 0.0F);
-                GL11.glRotatef(40.0F, 0.0F, 1.0F, 0.0F);
-            }
-
+            GL11.glRotatef(-10.0F, 1.0F, 0.0F, 0.0F);
+            GL11.glRotatef(-45.0F, 0.0F, 1.0F, 0.0F);
+            GL11.glRotatef(25.0F, 0.0F, 0.0F, 1.0F);
             if (!BattlegearUtils.RENDER_BUS
-                    .post(new PreRenderSheathed(preRender, onBack, backCount, true, mainhandSheathed))) {
-                renderItemAllPasses(dummyEntity, mainhandSheathed);
+                    .post(new PreRenderPlayerElement(preRender, false, PlayerElementType.ItemOffhand, offhandItem))) {
+                renderItemAllPasses(par1EntityPlayer, offhandItem);
             }
-
             BattlegearUtils.RENDER_BUS
-                    .post(new PostRenderSheathed(postRender, onBack, backCount, true, mainhandSheathed));
+                    .post(new PostRenderPlayerElement(postRender, false, PlayerElementType.ItemOffhand, offhandItem));
 
-            GL11.glPopMatrix();
-        }
-
-        if (offhandSheathed != null && !(offhandSheathed.getItem() instanceof ItemBlock)) {
-            boolean onBack = isBackSheathed(offhandSheathed);
-
-            ModelBiped target = modelBipedMain;
-            if (chestModel != null) {
-                target = chestModel;
-            } else if (legsModel != null && !onBack) {
-                target = legsModel;
-            }
-
-            GL11.glPushMatrix();
-            target.bipedBody.postRender(RENDER_UNIT);
-
-            if (onBack) {
-                if (offhandSheathed.getItem() instanceof IBackSheathedRender) {
-                    ((IBackSheathedRender) offhandSheathed.getItem())
-                            .preRenderBackSheathed(offhandSheathed, backCount, preRender, false);
-                } else if (offhandSheathed.getItem() instanceof IShield) {
-                    GL11.glScalef(-0.6F, -0.6F, 0.6F);
-                    GL11.glTranslatef(0, -1, 0);
-                } else {
-                    GL11.glScalef(-0.6F, 0.6F, 0.6F);
-                }
-                GL11.glTranslatef(-8 * RENDER_UNIT, 0, 6 * RENDER_UNIT);
-                GL11.glRotatef(-5F, 0.0F, 0.0F, 1.0F);
-                GL11.glRotatef(130F, 0.0F, 1.0F, 0.0F);
-                GL11.glTranslatef(0, 0, 4 * RENDER_UNIT - backCount * 2 * RENDER_UNIT);
-                backCount++;
-            } else {
-                GL11.glScalef(0.6F, 0.6F, 0.6F);
-                GL11.glTranslatef(-7 * RENDER_UNIT, 1, -4 * RENDER_UNIT);
-                if (hasChestArmour || hasLegArmour) {
-                    GL11.glTranslatef(-2 * RENDER_UNIT, 0, 0);
-                }
-                GL11.glRotatef(35F, 1.0F, 0.0F, 0.0F);
-                GL11.glRotatef(40.0F, 0.0F, 1.0F, 0.0F);
-            }
-            if (!BattlegearUtils.RENDER_BUS
-                    .post(new PreRenderSheathed(preRender, onBack, backCount, false, offhandSheathed))) {
-                renderItemAllPasses(dummyEntity, offhandSheathed);
-            }
-
-            BattlegearUtils.RENDER_BUS
-                    .post(new PostRenderSheathed(postRender, onBack, backCount, false, offhandSheathed));
             GL11.glPopMatrix();
         }
     }
@@ -682,15 +349,6 @@ public final class BattlegearRenderHelper {
         float g = (float) (col >> 8 & 255) / 255.0F;
         float b = (float) (col & 255) / 255.0F;
         GL11.glColor4f(r, g, b, 1.0F);
-    }
-
-    private static boolean isBackSheathed(ItemStack sheathed) {
-        if (sheathed.getItem() instanceof ISheathed) {
-            return ((ISheathed) sheathed.getItem()).sheatheOnBack(sheathed);
-        } else if (BattlegearUtils.isBow(sheathed.getItem())) {
-            return true;
-        }
-        return BattlegearConfig.forceSheath == Sheath.BACK;
     }
 
     public static void renderEnchantmentEffects(Tessellator tessellator) {

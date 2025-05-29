@@ -13,7 +13,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
@@ -32,7 +31,6 @@ import mods.battlegear2.api.IOffhandListener;
 import mods.battlegear2.api.PlayerEventChild;
 import mods.battlegear2.api.core.BattlegearUtils;
 import mods.battlegear2.api.core.IBattlePlayer;
-import mods.battlegear2.api.core.IInventoryPlayerBattle;
 import mods.battlegear2.api.heraldry.IFlagHolder;
 import mods.battlegear2.api.heraldry.IHeraldryItem;
 import mods.battlegear2.api.quiver.IArrowContainer2;
@@ -41,8 +39,9 @@ import mods.battlegear2.api.shield.IShield;
 import mods.battlegear2.api.weapons.IExtendedReachWeapon;
 import mods.battlegear2.enchantments.BaseEnchantment;
 import mods.battlegear2.packet.BattlegearShieldFlashPacket;
-import mods.battlegear2.packet.BattlegearSyncItemPacket;
 import mods.battlegear2.utils.EnumBGAnimations;
+import xonin.backhand.api.core.BackhandUtils;
+import xonin.backhand.api.core.IOffhandInventory;
 
 public final class BattlemodeHookContainerClass {
 
@@ -52,23 +51,6 @@ public final class BattlemodeHookContainerClass {
 
     private boolean isFake(Entity entity) {
         return entity instanceof FakePlayer;
-    }
-
-    /**
-     * Crash the game if our inventory has been replaced by something else, or the coremod failed Also synchronize
-     * battle inventory
-     *
-     * @param event that spawned the player
-     */
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onEntityJoin(EntityJoinWorldEvent event) {
-        if (event.entity instanceof EntityPlayer && !(isFake(event.entity))) {
-            if (event.entity instanceof EntityPlayerMP) {
-                Battlegear.packetHandler.sendPacketToPlayer(
-                        new BattlegearSyncItemPacket((EntityPlayer) event.entity).generatePacket(),
-                        (EntityPlayerMP) event.entity);
-            }
-        }
     }
 
     /**
@@ -101,18 +83,15 @@ public final class BattlemodeHookContainerClass {
         if (((IBattlePlayer) event.entityPlayer).battlegear2$getSpecialActionTimer() > 0) {
             event.setCanceled(true);
             event.entityPlayer.isSwingInProgress = false;
-        } else if (((IBattlePlayer) event.entityPlayer).battlegear2$isBattlemode()) {
+            // TODO-Backhand-Compat: Is this branch needed?
+        } else if (false) {
             if (event.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) { // Left click
                 ItemStack mainHandItem = event.entityPlayer.getCurrentEquippedItem();
                 if (mainHandItem != null && mainHandItem.getItem() instanceof IHandListener) {
                     PlayerInteractEvent copy = copy(event);
                     copy.useItem = Event.Result.DENY;
-                    Event.Result swing = ((IHandListener) mainHandItem.getItem()).onClickBlock(
-                            copy,
-                            mainHandItem,
-                            ((IInventoryPlayerBattle) event.entityPlayer.inventory)
-                                    .battlegear2$getCurrentOffhandWeapon(),
-                            false);
+                    Event.Result swing = ((IHandListener) mainHandItem.getItem())
+                            .onClickBlock(copy, mainHandItem, BackhandUtils.getOffhandItem(event.entityPlayer), false);
                     if (swing != Event.Result.DEFAULT) {
                         event.entityPlayer.isSwingInProgress = false;
                     }
@@ -123,9 +102,9 @@ public final class BattlemodeHookContainerClass {
                         event.useItem = copy.useItem;
                     }
                 }
+                // TODO-Backhand-Compat: Is this branch needed?
             } else { // Right click
-                ItemStack offhandItem = ((IInventoryPlayerBattle) event.entityPlayer.inventory)
-                        .battlegear2$getCurrentOffhandWeapon();
+                ItemStack offhandItem = BackhandUtils.getOffhandItem(event.entityPlayer);
                 if (offhandItem == null) {
                     sendOffSwingEvent(event, null, null);
                 } else if (BattlegearUtils.usagePriorAttack(offhandItem, event.entityPlayer, true)) {
@@ -334,8 +313,7 @@ public final class BattlemodeHookContainerClass {
             if (((IBattlePlayer) player).battlegear2$getSpecialActionTimer() > 0) {
                 event.setCanceled(true);
             } else if (((IBattlePlayer) player).battlegear2$isBlockingWithShield()) {
-                final ItemStack shield = ((IInventoryPlayerBattle) player.inventory)
-                        .battlegear2$getCurrentOffhandWeapon();
+                final ItemStack shield = BackhandUtils.getOffhandItem(player);
                 final float dmg = event.ammount;
                 if (((IShield) shield.getItem()).canBlock(shield, event.source)) {
                     boolean shouldBlock = true;
@@ -371,7 +349,8 @@ public final class BattlemodeHookContainerClass {
                             if (shield.getItem() instanceof IArrowCatcher) {
                                 if (((IArrowCatcher) shield.getItem())
                                         .catchArrow(shield, player, (IProjectile) event.source.getSourceOfDamage())) {
-                                    ((IInventoryPlayerBattle) player.inventory).battlegear2$setDirty(true);
+                                    // TODO-Backhand-Compat : Is this needed?
+                                    // ((IInventoryPlayerBattle) player.inventory).battlegear2$setDirty(true);
                                 }
                             }
                         }
@@ -379,12 +358,14 @@ public final class BattlemodeHookContainerClass {
                         if (blockEvent.damageShield && !player.capabilities.isCreativeMode) {
                             float red = ((IShield) shield.getItem()).getDamageReduction(shield, event.source);
                             if (red < dmg) {
-                                player.inventory.currentItem += IInventoryPlayerBattle.WEAPON_SETS;
+                                int oldSlot = player.inventory.currentItem;
+                                player.inventory.currentItem = ((IOffhandInventory) player.inventory)
+                                        .backhand$getOffhandSlot();
                                 shield.damageItem(Math.round(dmg - red), player);
                                 if (shield.stackSize <= 0) {
                                     player.destroyCurrentEquippedItem();
                                 }
-                                player.inventory.currentItem -= IInventoryPlayerBattle.WEAPON_SETS;
+                                player.inventory.currentItem = oldSlot;
                             }
                         }
                     }
@@ -427,10 +408,8 @@ public final class BattlemodeHookContainerClass {
                     && event.source.getEntity() instanceof IBattlePlayer
                     && !isFake(event.source.getEntity())) {
                 EntityPlayer player = (EntityPlayer) event.source.getEntity();
-                if (((IBattlePlayer) player).battlegear2$isBattlemode()) {
-                    stack = ((IInventoryPlayerBattle) player.inventory).battlegear2$getCurrentOffhandWeapon();
-                    addLootFromEnchant(stack, event.drops);
-                }
+                stack = BackhandUtils.getOffhandItem(player);
+                addLootFromEnchant(stack, event.drops);
             }
         }
     }
@@ -455,13 +434,5 @@ public final class BattlemodeHookContainerClass {
             return true;
         }
         return false;
-    }
-
-    @SubscribeEvent
-    public void addTracking(PlayerEvent.StartTracking event) {
-        if (event.target instanceof EntityPlayer && !isFake(event.target)) {
-            ((EntityPlayerMP) event.entityPlayer).playerNetServerHandler
-                    .sendPacket(new BattlegearSyncItemPacket((EntityPlayer) event.target).generatePacket());
-        }
     }
 }

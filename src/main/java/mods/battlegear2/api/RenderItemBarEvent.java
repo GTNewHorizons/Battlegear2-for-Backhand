@@ -68,21 +68,4 @@ public abstract class RenderItemBarEvent extends RenderGameOverlayEvent {
             this.quiver = item;
         }
     }
-
-    /**
-     * Event corresponding to the display of each additional hand slots
-     */
-    @Cancelable
-    public static class BattleSlots extends RenderItemBarEvent {
-
-        /**
-         * True if the slots are for the mainhand (on the "right"), false for the offhand (on the "left")
-         */
-        public final boolean isMainHand;
-
-        public BattleSlots(RenderGameOverlayEvent parent, boolean isMainHand) {
-            super(parent);
-            this.isMainHand = isMainHand;
-        }
-    }
 }

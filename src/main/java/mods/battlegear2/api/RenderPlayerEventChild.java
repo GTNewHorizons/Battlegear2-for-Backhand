@@ -15,8 +15,6 @@ public abstract class RenderPlayerEventChild extends RenderPlayerEvent {
     public static enum PlayerElementType {
         Offhand,
         ItemOffhand,
-        ItemOffhandSheathed,
-        ItemMainhandSheathed,
     }
 
     /**
@@ -54,53 +52,6 @@ public abstract class RenderPlayerEventChild extends RenderPlayerEvent {
         public PostRenderPlayerElement(RenderPlayerEvent parent, boolean isFirstPerson, PlayerElementType type,
                 ItemStack item) {
             super(parent, type, isFirstPerson, item);
-        }
-    }
-
-    @Cancelable
-    public static class PreRenderSheathed extends PreRenderPlayerElement {
-
-        /*
-         * True if the sheathed item is supposed to be on the player back
-         */
-        public final boolean isOnBack;
-        /*
-         * The number of items supposed to be laying on the player back, including chest armor
-         */
-        public final int backCount;
-
-        public PreRenderSheathed(RenderPlayerEvent parent, boolean isOnBack, int count, boolean isMainHand,
-                ItemStack item) {
-            super(
-                    parent,
-                    false,
-                    isMainHand ? PlayerElementType.ItemMainhandSheathed : PlayerElementType.ItemOffhandSheathed,
-                    item);
-            this.isOnBack = isOnBack;
-            this.backCount = count;
-        }
-    }
-
-    public static class PostRenderSheathed extends PostRenderPlayerElement {
-
-        /*
-         * True if the sheathed item is supposed to be on the player back
-         */
-        public final boolean isOnBack;
-        /*
-         * The number of items supposed to be laying on the player back, including chest armor
-         */
-        public final int backCount;
-
-        public PostRenderSheathed(RenderPlayerEvent parent, boolean isOnBack, int count, boolean isMainHand,
-                ItemStack item) {
-            super(
-                    parent,
-                    false,
-                    isMainHand ? PlayerElementType.ItemMainhandSheathed : PlayerElementType.ItemOffhandSheathed,
-                    item);
-            this.isOnBack = isOnBack;
-            this.backCount = count;
         }
     }
 }

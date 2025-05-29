@@ -15,15 +15,12 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import cpw.mods.fml.client.FMLClientHandler;
-import mods.battlegear2.Battlegear;
 import mods.battlegear2.api.RenderItemBarEvent;
-import mods.battlegear2.api.core.IBattlePlayer;
-import mods.battlegear2.api.core.IInventoryPlayerBattle;
 import mods.battlegear2.api.quiver.IArrowContainer2;
 import mods.battlegear2.api.quiver.QuiverArrowRegistry;
 import mods.battlegear2.api.shield.IShield;
 import mods.battlegear2.client.BattlegearClientTickHandeler;
-import mods.battlegear2.utils.BattlegearConfig;
+import xonin.backhand.api.core.BackhandUtils;
 
 public class BattlegearInGameGUI extends Gui {
 
@@ -45,7 +42,7 @@ public class BattlegearInGameGUI extends Gui {
 
     public void renderGameOverlay(float frame, int mouseX, int mouseY) {
 
-        if (Battlegear.battlegearEnabled && !this.mc.playerController.enableEverythingIsScrewedUpMode()) {
+        if (!this.mc.playerController.enableEverythingIsScrewedUpMode()) {
 
             ScaledResolution scaledresolution = new ScaledResolution(
                     this.mc,
@@ -57,21 +54,9 @@ public class BattlegearInGameGUI extends Gui {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             zLevel = -90.0F;
 
-            RenderItemBarEvent event = new RenderItemBarEvent.BattleSlots(renderEvent, true);
+            RenderItemBarEvent event;
 
-            if (mc.thePlayer != null) {
-                if (((IBattlePlayer) mc.thePlayer).battlegear2$isBattlemode() || BattlegearConfig.alwaysShowBattleBar) {
-                    if (!MinecraftForge.EVENT_BUS.post(event)) {
-                        renderBattleSlots(width / 2 + 121 + event.xOffset, height - 22 + event.yOffset, frame, true);
-                    }
-                    event = new RenderItemBarEvent.BattleSlots(renderEvent, false);
-                    if (!MinecraftForge.EVENT_BUS.post(event)) {
-                        renderBattleSlots(width / 2 - 184 + event.xOffset, height - 22 + event.yOffset, frame, false);
-                    }
-                }
-            }
-
-            ItemStack offhand = ((IInventoryPlayerBattle) mc.thePlayer.inventory).battlegear2$getCurrentOffhandWeapon();
+            ItemStack offhand = BackhandUtils.getOffhandItem(mc.thePlayer);
             if (offhand != null && offhand.getItem() instanceof IShield) {
                 event = new RenderItemBarEvent.ShieldBar(renderEvent, offhand);
                 if (!MinecraftForge.EVENT_BUS.post(event))
@@ -90,7 +75,7 @@ public class BattlegearInGameGUI extends Gui {
                 }
             }
             if (!quiverFound) {
-                mainhand = ((IInventoryPlayerBattle) mc.thePlayer.inventory).battlegear2$getCurrentOffhandWeapon();
+                mainhand = BackhandUtils.getOffhandItem(mc.thePlayer);
                 if (mainhand != null) {
                     ItemStack quiver = QuiverArrowRegistry.getArrowContainer(mainhand, mc.thePlayer);
                     if (quiver != null) {
@@ -101,39 +86,6 @@ public class BattlegearInGameGUI extends Gui {
                 }
             }
         }
-    }
-
-    public void renderBattleSlots(int x, int y, float frame, boolean isMainHand) {
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.renderEngine.bindTexture(resourceLocation);
-
-        drawTexturedModalRect(x, y, 0, 0, 31, SLOT_H);
-        drawTexturedModalRect(x + 31, y, 151, 0, 31, SLOT_H);
-
-        if (mc.thePlayer != null) {
-            if (((IBattlePlayer) mc.thePlayer).battlegear2$isBattlemode()) this.drawTexturedModalRect(
-                    x + (mc.thePlayer.inventory.currentItem - IInventoryPlayerBattle.OFFSET) * 20 - 1,
-                    y - 1,
-                    0,
-                    22,
-                    24,
-                    SLOT_H);
-            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-            RenderHelper.enableGUIStandardItemLighting();
-            for (int i = 0; i < IInventoryPlayerBattle.WEAPON_SETS; ++i) {
-                int varx = x + i * 20 + 3;
-                this.renderInventorySlot(
-                        i + IInventoryPlayerBattle.OFFSET + (isMainHand ? 0 : IInventoryPlayerBattle.WEAPON_SETS),
-                        varx,
-                        y + 3,
-                        frame);
-            }
-            RenderHelper.disableStandardItemLighting();
-            GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-        }
-        GL11.glDisable(GL11.GL_BLEND);
     }
 
     public void renderQuiverBar(ItemStack quiver, float frame, int xOffset, int yOffset) {
@@ -197,11 +149,6 @@ public class BattlegearInGameGUI extends Gui {
         this.drawTexturedModalRect(x, y, 0, 9, (int) (182 * BattlegearClientTickHandeler.getBlockTime()), 9);
 
         GL11.glDisable(GL11.GL_BLEND);
-    }
-
-    private void renderInventorySlot(int par1, int par2, int par3, float par4) {
-        ItemStack itemstack = this.mc.thePlayer.inventory.getStackInSlot(par1);
-        renderStackAt(par2, par3, itemstack, par4);
     }
 
     private void renderStackAt(int x, int y, ItemStack itemstack, float frame) {
