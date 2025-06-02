@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -37,7 +36,6 @@ public final class BattlegearRenderHelper {
     private static final ItemStack dummyStack = new ItemStack(Blocks.flowing_lava);
     public static final float RENDER_UNIT = 1F / 16F; // 0.0625
     public static float PROGRESS_INCREMENT_LIMIT = 0.4F;
-    public static EntityLivingBase dummyEntity;
 
     private static final ResourceLocation ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
     private static final ResourceLocation DEFAULT_ARROW = new ResourceLocation("textures/entity/arrow.png");
@@ -65,12 +63,6 @@ public final class BattlegearRenderHelper {
     public static void renderItemInFirstPerson(float frame, Minecraft mc, ItemRenderer itemRenderer) {
         GL11.glPopMatrix();
         GL11.glCullFace(GL11.GL_BACK);
-        if (dummyEntity == null) {
-            dummyEntity = new EntityChicken(mc.theWorld);
-        }
-        if (dummyEntity.worldObj != mc.theWorld) {
-            dummyEntity = new EntityChicken(mc.theWorld);
-        }
 
         IOffhandRender offhandRender = (IOffhandRender) itemRenderer;
 
@@ -118,9 +110,6 @@ public final class BattlegearRenderHelper {
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             }
 
-            float var11;
-            float var12;
-            float var13;
             RenderPlayer var26 = (RenderPlayer) RenderManager.instance.getEntityRenderObject(mc.thePlayer);
             RenderPlayerEvent preRender = new RenderPlayerEvent.Pre(player, var26, frame);
             RenderPlayerEvent postRender = new RenderPlayerEvent.Post(player, var26, frame);
