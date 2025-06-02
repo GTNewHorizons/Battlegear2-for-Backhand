@@ -28,7 +28,7 @@ import xonin.backhand.api.core.BackhandUtils;
 public final class BattlegearClientTickHandeler {
 
     private static final int FLASH_MAX = 30;
-    private final KeyBinding drawWeapons, special;
+    private final KeyBinding special;
     private final Minecraft mc;
 
     private float blockBar = 1;
@@ -39,9 +39,7 @@ public final class BattlegearClientTickHandeler {
     public static final BattlegearClientTickHandeler INSTANCE = new BattlegearClientTickHandeler();
 
     private BattlegearClientTickHandeler() {
-        drawWeapons = new KeyBinding(I18n.format("key.drawWeapons"), Keyboard.KEY_G, "key.categories.battlegear");
         special = new KeyBinding(I18n.format("key.special"), Keyboard.KEY_NONE, "key.categories.battlegear");
-        ClientRegistry.registerKeyBinding(drawWeapons);
         ClientRegistry.registerKeyBinding(special);
         mc = FMLClientHandler.instance().getClient();
     }
