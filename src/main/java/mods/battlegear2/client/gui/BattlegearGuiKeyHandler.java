@@ -9,17 +9,12 @@ import cpw.mods.fml.client.registry.ClientRegistry;
 
 public final class BattlegearGuiKeyHandler {
 
-    private final KeyBinding battleInv, openSigilEditor;
+    private final KeyBinding battleInv;
     public static final BattlegearGuiKeyHandler INSTANCE = new BattlegearGuiKeyHandler();
 
     private BattlegearGuiKeyHandler() {
         battleInv = new KeyBinding(I18n.format("key.battleInv"), Keyboard.KEY_I, "key.categories.battlegear");
-        openSigilEditor = new KeyBinding(
-                I18n.format("key.openSigilEditor"),
-                Keyboard.KEY_P,
-                "key.categories.battlegear");
         ClientRegistry.registerKeyBinding(battleInv);
-        ClientRegistry.registerKeyBinding(openSigilEditor);
     }
 
 }
