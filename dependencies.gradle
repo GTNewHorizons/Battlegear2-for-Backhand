@@ -3,5 +3,5 @@
 dependencies {
     api('com.github.GTNewHorizons:Backhand:1.6.16:dev')
     compileOnly('curse.maven:dynamic-lights-227874:2337326')
-    devOnlyNonPublishable("com.github.GTNewHorizons:NotEnoughItems:2.7.38-GTNH:dev")
+    devOnlyNonPublishable("com.github.GTNewHorizons:NotEnoughItems:2.7.49-GTNH:dev")
 }
