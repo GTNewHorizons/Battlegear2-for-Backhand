@@ -11,7 +11,6 @@ import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
-import mods.battlegear2.client.utils.BattlegearRenderHelper;
 import mods.battlegear2.items.ItemQuiver;
 import xonin.backhand.api.core.BackhandUtils;
 
@@ -71,11 +70,7 @@ public class QuiverItremRenderer implements IItemRenderer {
             case EQUIPPED:
             case EQUIPPED_FIRST_PERSON:
                 if (data.length > 1 && data[1] instanceof EntityLivingBase livingBase) {
-                    if (livingBase.equals(BattlegearRenderHelper.dummyEntity)) {
-                        // Doesn't render sheathed
-                        GL11.glPopMatrix();
-                        return;
-                    } else if (livingBase instanceof EntityPlayer player && BackhandUtils.isUsingOffhand(player)) {
+                    if (livingBase instanceof EntityPlayer player && BackhandUtils.isUsingOffhand(player)) {
                         // Doesn't render in offhand
                         GL11.glPopMatrix();
                         return;
