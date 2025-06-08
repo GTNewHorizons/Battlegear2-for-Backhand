@@ -15,7 +15,6 @@ import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.Name;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
-import mods.battlegear2.asm.transformers.InventoryArrayAccessTransformer;
 
 @TransformerExclusions({ "mods.battlegear2.asm.loader", "mods.battlegear2.asm.transformers" })
 @Name("ASM Battlegear2")
@@ -27,7 +26,7 @@ public final class BattlegearLoadingPlugin implements IEarlyMixinLoader, IFMLLoa
 
     @Override
     public String[] getASMTransformerClass() {
-        return new String[] { InventoryArrayAccessTransformer.class.getName() };
+        return new String[] {};
     }
 
     @Override
@@ -60,15 +59,8 @@ public final class BattlegearLoadingPlugin implements IEarlyMixinLoader, IFMLLoa
         final List<String> mixins = new ArrayList<>();
         mixins.add("MixinEntityPlayer");
         mixins.add("MixinItemStack");
-        mixins.add("MixinInventoryPlayer");
-        mixins.add("MixinNetHandlerPlayServer");
         if (FMLLaunchHandler.side().isClient()) {
-            mixins.add("MixinEntityOtherPlayerMP");
-            mixins.add("MixinInventoryPlayerClient");
             mixins.add("MixinItemRenderer");
-            mixins.add("MixinModelBiped");
-            mixins.add("MixinNetHandlerPlayClient");
-            mixins.add("MixinForgeHooks");
         }
         return mixins;
     }

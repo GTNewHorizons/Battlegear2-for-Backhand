@@ -1,31 +1,19 @@
 package mods.battlegear2.client;
 
-import java.util.List;
-
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.model.ModelBiped;
-import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.RenderSkeleton;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
-import net.minecraft.world.World;
 import net.minecraftforge.client.event.FOVUpdateEvent;
-import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -34,16 +22,12 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import mods.battlegear2.Battlegear;
 import mods.battlegear2.api.EnchantmentHelper;
 import mods.battlegear2.api.IDyable;
 import mods.battlegear2.api.RenderItemBarEvent;
 import mods.battlegear2.api.core.IBattlePlayer;
-import mods.battlegear2.api.core.IInventoryPlayerBattle;
 import mods.battlegear2.api.quiver.IArrowContainer2;
 import mods.battlegear2.api.quiver.QuiverArrowRegistry;
 import mods.battlegear2.api.weapons.IBackStabbable;
@@ -51,14 +35,12 @@ import mods.battlegear2.api.weapons.IExtendedReachWeapon;
 import mods.battlegear2.api.weapons.IHitTimeModifier;
 import mods.battlegear2.api.weapons.IPenetrateWeapon;
 import mods.battlegear2.client.gui.BattlegearInGameGUI;
-import mods.battlegear2.client.gui.controls.GuiBGInventoryButton;
-import mods.battlegear2.client.gui.controls.GuiPlaceableButton;
-import mods.battlegear2.client.gui.controls.GuiSigilButton;
 import mods.battlegear2.client.model.QuiverModel;
 import mods.battlegear2.client.utils.BattlegearRenderHelper;
 import mods.battlegear2.enchantments.BaseEnchantment;
 import mods.battlegear2.items.ItemWeapon;
 import mods.battlegear2.utils.BattlegearConfig;
+import xonin.backhand.api.core.BackhandUtils;
 
 public final class BattlegearClientEvents {
 
@@ -70,8 +52,6 @@ public final class BattlegearClientEvents {
     // "textures/heraldry/Patterns-small.png");
     // public static int storageIndex;
 
-    private static final int MAIN_INV = InventoryPlayer.getHotbarSize();
-    public static final GuiPlaceableButton[] tabsList = { new GuiBGInventoryButton(0), new GuiSigilButton(1) };
     public static final BattlegearClientEvents INSTANCE = new BattlegearClientEvents();
 
     private BattlegearClientEvents() {
@@ -79,20 +59,6 @@ public final class BattlegearClientEvents {
         quiverModel = new QuiverModel();
         quiverDetails = new ResourceLocation("battlegear2", "textures/armours/quiver/QuiverDetails.png");
         quiverBase = new ResourceLocation("battlegear2", "textures/armours/quiver/QuiverBase.png");
-    }
-
-    /**
-     * Offset battle slots rendering according to config values
-     */
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void postRenderBar(RenderItemBarEvent.BattleSlots event) {
-        if (!event.isMainHand) {
-            event.xOffset += BattlegearConfig.battleBarOffset[0];
-            event.yOffset += BattlegearConfig.battleBarOffset[1];
-        } else {
-            event.xOffset += BattlegearConfig.battleBarOffset[2];
-            event.yOffset += BattlegearConfig.battleBarOffset[3];
-        }
     }
 
     /**
@@ -129,23 +95,10 @@ public final class BattlegearClientEvents {
      */
     @SubscribeEvent(priority = EventPriority.LOW)
     public void renderPlayerLeftItemUsage(RenderLivingEvent.Pre event) {
-        if (event.entity instanceof EntityPlayer) {
-            EntityPlayer entityPlayer = (EntityPlayer) event.entity;
-            ItemStack offhand = ((IInventoryPlayerBattle) entityPlayer.inventory).battlegear2$getCurrentOffhandWeapon();
-            if (offhand != null && event.renderer instanceof RenderPlayer) {
-                RenderPlayer renderer = ((RenderPlayer) event.renderer);
-                renderer.modelArmorChestplate.heldItemLeft = renderer.modelArmor.heldItemLeft = renderer.modelBipedMain.heldItemLeft = 1;
-                if (entityPlayer.getItemInUseCount() > 0 && entityPlayer.getItemInUse() == offhand) {
-                    EnumAction enumaction = offhand.getItemUseAction();
-                    if (enumaction == EnumAction.block) {
-                        renderer.modelArmorChestplate.heldItemLeft = renderer.modelArmor.heldItemLeft = renderer.modelBipedMain.heldItemLeft = 3;
-                    } else if (enumaction == EnumAction.bow) {
-                        renderer.modelArmorChestplate.aimedBow = renderer.modelArmor.aimedBow = renderer.modelBipedMain.aimedBow = true;
-                    }
-                    ItemStack mainhand = entityPlayer.inventory.getCurrentItem();
-                    renderer.modelArmorChestplate.heldItemRight = renderer.modelArmor.heldItemRight = renderer.modelBipedMain.heldItemRight = mainhand
-                            != null ? 1 : 0;
-                } else if (((IBattlePlayer) entityPlayer).battlegear2$isBlockingWithShield()) {
+        if (event.entity instanceof EntityPlayer entityPlayer) {
+            ItemStack offhand = BackhandUtils.getOffhandItem(entityPlayer);
+            if (offhand != null && event.renderer instanceof RenderPlayer renderer) {
+                if (((IBattlePlayer) entityPlayer).battlegear2$isBlockingWithShield()) {
                     renderer.modelArmorChestplate.heldItemLeft = renderer.modelArmor.heldItemLeft = renderer.modelBipedMain.heldItemLeft = 3;
                 }
             }
@@ -294,36 +247,6 @@ public final class BattlegearClientEvents {
     }
 
     /**
-     * Equivalent code to the creative pick block
-     *
-     * @param target The client target vector
-     * @param player The player trying to pick
-     * @return the stack expected for the creative pick button
-     */
-    private static ItemStack getItemFromPointedAt(MovingObjectPosition target, EntityPlayer player) {
-        if (target != null) {
-            if (target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-                int x = target.blockX;
-                int y = target.blockY;
-                int z = target.blockZ;
-                World world = player.getEntityWorld();
-                Block block = world.getBlock(x, y, z);
-                if (block.isAir(world, x, y, z)) {
-                    return null;
-                }
-                return block.getPickBlock(target, world, x, y, z, player);
-            } else {
-                if (target.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY || target.entityHit == null
-                        || !player.capabilities.isCreativeMode) {
-                    return null;
-                }
-                return target.entityHit.getPickedResult(target);
-            }
-        }
-        return null;
-    }
-
-    /**
      * Returns a rotation angle that is inbetween two other rotation angles. par1 and par2 are the angles between which
      * to interpolate, par3 is probably a float between 0.0 and 1.0 that tells us where "between" the two angles we are.
      * Example: par1 = 30, par2 = 50, par3 = 0.5, then return = 40
@@ -428,70 +351,6 @@ public final class BattlegearClientEvents {
         if (event.itemStack.getItem() instanceof IBackStabbable) {
             event.toolTip
                     .add(EnumChatFormatting.GOLD + StatCollector.translateToLocal("attribute.name.weapon.backstab"));
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @SubscribeEvent(priority = EventPriority.LOW)
-    public void postInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
-        if (Battlegear.battlegearEnabled && event.gui instanceof InventoryEffectRenderer) {
-            if (!ClientProxy.tconstructEnabled) {
-                onOpenGui(
-                        event.buttonList,
-                        guessGuiLeft((InventoryEffectRenderer) event.gui) - 30,
-                        guessGuiTop(event.gui));
-            }
-        }
-    }
-
-    /**
-     * Make a guess over the value of GuiContainer#guiLeft (protected) Use magic numbers ! NotEnoughItems mod is also
-     * changing the gui offset, for some reason.
-     *
-     * @param guiContainer the current screen whose value is desired
-     * @return the guessed value
-     */
-    public static int guessGuiLeft(InventoryEffectRenderer guiContainer) {
-        int offset = Loader.isModLoaded("NotEnoughItems")
-                || FMLClientHandler.instance().getClientPlayerEntity().getActivePotionEffects().isEmpty() ? 0 : 60;
-        if (guiContainer instanceof GuiContainerCreative) {
-            return offset + (guiContainer.width - 195) / 2;
-        }
-        return offset + (guiContainer.width - 176) / 2;
-    }
-
-    /**
-     * Make a guess over the value of GuiContainer#guiTop (protected) Use magic numbers !
-     *
-     * @param gui the current screen whose value is desired
-     * @return the guessed value
-     */
-    public static int guessGuiTop(GuiScreen gui) {
-        if (gui instanceof GuiContainerCreative) {
-            return (gui.height - 136) / 2;
-        }
-        return (gui.height - 166) / 2;
-    }
-
-    /**
-     * Helper method to add buttons to a gui when opened
-     *
-     * @param buttons the List<GuiButton> of the opened gui
-     * @param guiLeft horizontal placement parameter
-     * @param guiTop  vertical placement parameter
-     */
-    public static void onOpenGui(List<GuiButton> buttons, int guiLeft, int guiTop) {
-        if (BattlegearConfig.enableGuiButtons) {
-            int count = 0;
-            for (GuiPlaceableButton tab : tabsList) {
-                GuiPlaceableButton button = tab.copy();
-                button.place(count, guiLeft, guiTop);
-                button.id = buttons.size() + 2; // Due to GuiInventory and GuiContainerCreative button performed
-                // actions, without them
-                // having buttons...
-                count++;
-                buttons.add(button);
-            }
         }
     }
 }

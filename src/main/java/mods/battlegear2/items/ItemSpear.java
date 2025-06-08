@@ -7,20 +7,16 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import net.minecraftforge.client.event.RenderPlayerEvent;
-
-import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Multimap;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import mods.battlegear2.api.IBackSheathedRender;
 import mods.battlegear2.api.shield.IShield;
 import mods.battlegear2.api.weapons.IExtendedReachWeapon;
 
-public class ItemSpear extends TwoHandedWeapon implements IExtendedReachWeapon, IBackSheathedRender {
+public class ItemSpear extends TwoHandedWeapon implements IExtendedReachWeapon {
 
     // Will make it one more than a sword
     private final int mounted_extra_damage;
@@ -76,17 +72,5 @@ public class ItemSpear extends TwoHandedWeapon implements IExtendedReachWeapon, 
     public void registerIcons(IIconRegister par1IconRegister) {
         super.registerIcons(par1IconRegister);
         bigIcon = par1IconRegister.registerIcon(this.getIconString() + ".big");
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void preRenderBackSheathed(ItemStack itemStack, int amountOnBack, RenderPlayerEvent event,
-            boolean inMainHand) {
-        if (inMainHand) {
-            GL11.glScalef(0.6F, -0.6F, 0.6F);
-            GL11.glTranslatef(0, -1, 0);
-        } else { // Case never reached anyway
-            GL11.glScalef(-0.6F, 0.6F, 0.6F);
-        }
     }
 }

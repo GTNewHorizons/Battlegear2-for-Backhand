@@ -78,7 +78,7 @@ public class BowRendererIron implements IItemRenderer {
         } else if (entityLivingBase instanceof EntitySkeleton) {
             arrowStack = MobHookContainerClass.INSTANCE.getArrowForMob((EntitySkeleton) entityLivingBase);
             drawArrows = true;
-        } else if (entityLivingBase == null || entityLivingBase.equals(BattlegearRenderHelper.dummyEntity)) {
+        } else if (entityLivingBase == null) {
             arrowStack = null;
         }
 

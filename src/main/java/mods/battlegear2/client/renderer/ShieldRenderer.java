@@ -12,8 +12,9 @@ import org.lwjgl.opengl.GL11;
 
 import mods.battlegear2.client.utils.BattlegearRenderHelper;
 import mods.battlegear2.items.ItemShield;
+import xonin.backhand.compat.IOffhandRenderOptOut;
 
-public class ShieldRenderer implements IItemRenderer {
+public class ShieldRenderer implements IItemRenderer, IOffhandRenderOptOut {
 
     private RenderItem itemRenderer;
 
@@ -92,8 +93,9 @@ public class ShieldRenderer implements IItemRenderer {
                 if (item.hasEffect(0)) BattlegearRenderHelper.renderEnchantmentEffects(tessellator);
 
                 break;
-            case EQUIPPED:
             case EQUIPPED_FIRST_PERSON:
+                break;
+            case EQUIPPED:
                 GL11.glColor3f(red, green, blue);
                 ItemRenderer.renderItemIn2D(
                         tessellator,

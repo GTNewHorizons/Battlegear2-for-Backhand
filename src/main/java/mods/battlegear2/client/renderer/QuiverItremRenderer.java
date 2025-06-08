@@ -4,15 +4,15 @@ import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
-import mods.battlegear2.api.core.IBattlePlayer;
-import mods.battlegear2.client.utils.BattlegearRenderHelper;
 import mods.battlegear2.items.ItemQuiver;
+import xonin.backhand.api.core.BackhandUtils;
 
 public class QuiverItremRenderer implements IItemRenderer {
 
@@ -69,18 +69,12 @@ public class QuiverItremRenderer implements IItemRenderer {
                 GL11.glTranslatef(-0.5F, -0.25F, 0);
             case EQUIPPED:
             case EQUIPPED_FIRST_PERSON:
-                if (data.length > 1 && data[1] instanceof EntityLivingBase) {
-                    EntityLivingBase livingBase = (EntityLivingBase) data[1];
-                    if (livingBase == null || livingBase.equals(BattlegearRenderHelper.dummyEntity)) {
-                        // Doesn't render sheathed
+                if (data.length > 1 && data[1] instanceof EntityLivingBase livingBase) {
+                    if (livingBase instanceof EntityPlayer player && BackhandUtils.isUsingOffhand(player)) {
+                        // Doesn't render in offhand
                         GL11.glPopMatrix();
                         return;
-                    } else if (livingBase instanceof IBattlePlayer
-                            && ((IBattlePlayer) livingBase).battlegear2$isBattlemode()) {
-                                // Doesn't render in battlemode
-                                GL11.glPopMatrix();
-                                return;
-                            }
+                    }
                 }
                 GL11.glColor3f(red, green, blue);
                 ItemRenderer.renderItemIn2D(

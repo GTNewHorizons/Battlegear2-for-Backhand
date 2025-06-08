@@ -11,10 +11,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-import mods.battlegear2.api.core.IInventoryPlayerBattle;
 import mods.battlegear2.api.quiver.IArrowContainer2;
 import mods.battlegear2.api.quiver.QuiverArrowRegistry;
 import mods.battlegear2.items.ItemMBArrow;
+import xonin.backhand.api.core.BackhandUtils;
 
 public abstract class AbstractMBArrow extends EntityArrow {
 
@@ -104,7 +104,7 @@ public abstract class AbstractMBArrow extends EntityArrow {
     public boolean tryPickArrow(EntityPlayer player) {
         ItemStack arrow = getPickedUpItem();
         if (arrow != null) {
-            ItemStack offhand = ((IInventoryPlayerBattle) player.inventory).battlegear2$getCurrentOffhandWeapon();
+            ItemStack offhand = BackhandUtils.getOffhandItem(player);
             if (offhand != null && offhand.getItem() instanceof IArrowContainer2) {
                 final int size = arrow.stackSize;
                 ItemStack arrowLeft = ((IArrowContainer2) offhand.getItem()).addArrows(offhand, arrow);
