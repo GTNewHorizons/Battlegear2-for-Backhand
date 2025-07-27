@@ -17,7 +17,7 @@ flag.design.load=Laden
 flag.design.load.sections=Teil laden
 
 key.battleInv=Waffeninventar
-key.drawWeapons=Waffen zücken
+key.drawWeapons=Waffen ziehen
 key.openSigilEditor=Wappeneditor öffnen
 key.special=Spezial
 
@@ -129,12 +129,12 @@ lore.base.arrow.ender=Dieses Enderauge scheint Schmerzen zu haben...
 lore.base.arrow.flame=Kein Feuerzeug? Passt schon
 lore.base.arrow.piercing=Ungemein schneidfähig
 lore.base.arrow.poison=Teuer, oder?
-lore.base.arrow.mystery=Jeder man Kekse!
+lore.base.arrow.mystery=Jeder mag Kekse!
 lore.base.arrow.leech=Lässt dich schwach fühlen
 
-lore.advanced.arrow.holy=Platzier eine Fackel dort, wo er landet
+lore.advanced.arrow.holy=Platziert eine Fackel dort, wo er landet
 lore.advanced.arrow.ice=Gut gegen alles, was gegen Feuer immun ist
-lore.advanced.arrow.explosive=Explosionsstärke varriert je nach kritischem Treffer
+lore.advanced.arrow.explosive=Explosionsstärke variiert je nach kritischem Treffer
 lore.advanced.arrow.ender=Schnellreise oder -transport
 lore.advanced.arrow.flame=Zündet Monster, Spieler und Blöcke an
 lore.advanced.arrow.piercing=Stylisches Schafescheren
