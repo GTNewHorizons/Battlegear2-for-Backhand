@@ -368,11 +368,13 @@ public final class BattlegearRenderHelper {
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glDepthFunc(GL11.GL_LEQUAL);
+        GL11.glColor3f(1, 1, 1); // Fixes weird color of Arrows
     }
 
     public static void renderArrows(ItemStack stack, boolean isEntity) {
-        if (stack.getItem() instanceof IArrowDisplay) {
-            int arrowCount = ((IArrowDisplay) stack.getItem()).getArrowCount(stack);
+        if (stack.getItem() instanceof IArrowDisplay arrowDisplay) {
+            if (arrowDisplay.isDisabled(stack)) return;
+            int arrowCount = arrowDisplay.getArrowCount(stack);
             // Bounds checking (rendering this many is quite silly, any more would look VERY silly)
             if (arrowCount > 64) arrowCount = 64;
             for (int i = 0; i < arrowCount; i++) {
@@ -404,7 +406,6 @@ public final class BattlegearRenderHelper {
 
         GL11.glRotatef(pitch, 0, 1, 0);
         GL11.glRotatef(yaw, 1, 0, 0);
-        GL11.glNormal3f(f10, 0, 0);
 
         double f2 = 12F / 32F * depth;
         double f5 = 5 / 32.0F;

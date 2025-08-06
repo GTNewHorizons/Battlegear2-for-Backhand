@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL11;
 
 import mods.battlegear2.client.utils.BattlegearRenderHelper;
 import mods.battlegear2.items.ItemShield;
+import xonin.backhand.api.core.BackhandUtils;
 import xonin.backhand.compat.IOffhandRenderOptOut;
 
 public class ShieldRenderer implements IItemRenderer, IOffhandRenderOptOut {
@@ -20,7 +21,7 @@ public class ShieldRenderer implements IItemRenderer, IOffhandRenderOptOut {
 
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
-        return type != ItemRenderType.FIRST_PERSON_MAP && item != null && item.getItem() instanceof ItemShield;
+        return type != ItemRenderType.FIRST_PERSON_MAP;
     }
 
     @Override
@@ -37,8 +38,6 @@ public class ShieldRenderer implements IItemRenderer, IOffhandRenderOptOut {
 
         ItemShield shield = (ItemShield) item.getItem();
 
-        GL11.glPushMatrix();
-
         Tessellator tessellator = Tessellator.instance;
 
         int col = shield.getColor(item);
@@ -48,8 +47,11 @@ public class ShieldRenderer implements IItemRenderer, IOffhandRenderOptOut {
 
         IIcon icon = item.getIconIndex();
 
+        // break = render arrows, return = no arrows
         switch (type) {
             case ENTITY:
+                GL11.glPushMatrix();
+
                 GL11.glTranslatef(-0.5F, -0.25F, 0);
 
                 GL11.glColor3f(red, green, blue);
@@ -90,12 +92,53 @@ public class ShieldRenderer implements IItemRenderer, IOffhandRenderOptOut {
                         icon.getIconWidth(),
                         icon.getIconHeight(),
                         (8F + 16F) / 256F);
-                if (item.hasEffect(0)) BattlegearRenderHelper.renderEnchantmentEffects(tessellator);
 
+                if (item.hasEffect(0)) {
+                    // Fixes Enchantment Glint of dropped Shield
+                    GL11.glTranslatef(0, 0, -8F / 256F);
+                    BattlegearRenderHelper.renderEnchantmentEffects(tessellator);
+                }
+
+                GL11.glPopMatrix();
                 break;
             case EQUIPPED_FIRST_PERSON:
+                if (!BackhandUtils.isUsingOffhand(Minecraft.getMinecraft().thePlayer)) {
+                    GL11.glPushMatrix();
+
+                    GL11.glColor3f(red, green, blue);
+                    ItemRenderer.renderItemIn2D(
+                            tessellator,
+                            icon.getMaxU(),
+                            icon.getMinV(),
+                            icon.getMinU(),
+                            icon.getMaxV(),
+                            icon.getIconWidth(),
+                            icon.getIconHeight(),
+                            16F / 256F);
+
+                    // does not need to render the back
+                    GL11.glColor3f(1, 1, 1);
+
+                    icon = shield.getTrimIcon();
+                    ItemRenderer.renderItemIn2D(
+                            tessellator,
+                            icon.getMaxU(),
+                            icon.getMinV(),
+                            icon.getMinU(),
+                            icon.getMaxV(),
+                            icon.getIconWidth(),
+                            icon.getIconHeight(),
+                            (8F + 16F) / 256F);
+
+                    if (item.hasEffect(0)) BattlegearRenderHelper.renderEnchantmentEffects(tessellator);
+                    GL11.glPopMatrix();
+
+                    BattlegearRenderHelper.renderArrows(item, false);
+                }
                 break;
             case EQUIPPED:
+                GL11.glPushMatrix();
+
                 GL11.glColor3f(red, green, blue);
                 ItemRenderer.renderItemIn2D(
                         tessellator,
@@ -136,8 +179,16 @@ public class ShieldRenderer implements IItemRenderer, IOffhandRenderOptOut {
                         icon.getIconWidth(),
                         icon.getIconHeight(),
                         (8F + 16F) / 256F);
-                if (item.hasEffect(0)) BattlegearRenderHelper.renderEnchantmentEffects(tessellator);
 
+                if (item.hasEffect(0)) {
+                    // Enchantment glint doesn't render properly in 1st person (also just a visual distraction)
+                    if (Minecraft.getMinecraft().gameSettings.thirdPersonView != 0) {
+                        BattlegearRenderHelper.renderEnchantmentEffects(tessellator);
+                    }
+                }
+
+                GL11.glPopMatrix();
+                BattlegearRenderHelper.renderArrows(item, false);
                 break;
             case INVENTORY:
                 GL11.glColor3f(red, green, blue);
@@ -156,8 +207,6 @@ public class ShieldRenderer implements IItemRenderer, IOffhandRenderOptOut {
             default:
                 break;
         }
-        BattlegearRenderHelper.renderArrows(item, type == ItemRenderType.ENTITY);
 
-        GL11.glPopMatrix();
     }
 }
