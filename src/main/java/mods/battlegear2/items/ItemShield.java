@@ -182,7 +182,7 @@ public class ItemShield extends Item
             boolean par4) {
         super.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
 
-        par3List.add("");
+        par3List.add(StatCollector.translateToLocal("attribute.shield.tooltip"));
 
         par3List.add(
                 EnumChatFormatting.DARK_GREEN + StatCollector.translateToLocalFormatted(
