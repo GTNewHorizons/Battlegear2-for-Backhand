@@ -46,7 +46,7 @@ public class ShieldRenderer implements IItemRenderer, IOffhandRenderOptOut {
         float blue = (float) (col & 255) / 255.0F;
 
         IIcon icon = item.getIconIndex();
-        
+
         switch (type) {
             case ENTITY:
                 GL11.glPushMatrix();
