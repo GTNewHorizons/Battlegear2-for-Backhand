@@ -11,10 +11,12 @@ import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.World;
 
 import cpw.mods.fml.common.IFuelHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -30,6 +32,7 @@ import mods.battlegear2.api.shield.IShield;
 import mods.battlegear2.api.shield.ShieldType;
 import mods.battlegear2.enchantments.BaseEnchantment;
 import mods.battlegear2.utils.BattlegearConfig;
+import xonin.backhand.api.core.BackhandUtils;
 
 public class ItemShield extends Item
         implements IShield, IDyable, IEnchantable, ISheathed, IArrowCatcher, IArrowDisplay, IFuelHandler {
@@ -95,6 +98,34 @@ public class ItemShield extends Item
         stack.getTagCompound().setShort("arrows", (short) count);
     }
 
+    // Disable Arrows (enabled by default)
+    @Override
+    public boolean isDisabled(ItemStack stack) {
+        return stack.getTagCompound() != null && stack.getTagCompound().getBoolean(NBT_KEY_DISABLED);
+    }
+
+    @Override
+    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
+        if (!world.isRemote && player.isSneaking()) {
+            if (!BackhandUtils.isUsingOffhand(player)) {
+                NBTTagCompound tag = stack.getTagCompound();
+                if (tag == null) {
+                    tag = new NBTTagCompound();
+                    stack.setTagCompound(tag);
+                }
+
+                boolean disabled = tag.getBoolean(NBT_KEY_DISABLED);
+                disabled = !disabled;
+                tag.setBoolean(NBT_KEY_DISABLED, disabled);
+
+                String state = disabled ? EnumChatFormatting.RED + "Disabled" : EnumChatFormatting.GREEN + "Enabled";
+
+                player.addChatMessage(new ChatComponentText(state + " Shield Arrows"));
+            }
+        }
+        return stack;
+    }
+
     public IIcon getBackIcon() {
         return backIcon;
     }
@@ -151,7 +182,7 @@ public class ItemShield extends Item
             boolean par4) {
         super.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
 
-        par3List.add("");
+        par3List.add(StatCollector.translateToLocal("attribute.shield.tooltip"));
 
         par3List.add(
                 EnumChatFormatting.DARK_GREEN + StatCollector.translateToLocalFormatted(
@@ -163,6 +194,14 @@ public class ItemShield extends Item
             par3List.add(
                     EnumChatFormatting.GOLD
                             + StatCollector.translateToLocalFormatted("attribute.shield.arrow.count", arrowCount));
+
+            boolean enabled = !isDisabled(par1ItemStack);
+            String display = enabled ? EnumChatFormatting.GREEN + StatCollector.translateToLocal("options.on")
+                    : EnumChatFormatting.RED + StatCollector.translateToLocal("options.off");
+            par3List.add(
+                    EnumChatFormatting.GOLD + StatCollector.translateToLocalFormatted(
+                            "attribute.shield.arrow.state",
+                            display + EnumChatFormatting.WHITE));
         }
     }
 
