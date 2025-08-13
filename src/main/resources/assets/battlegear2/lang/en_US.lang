@@ -1,4 +1,5 @@
 tab.battle.title=M&B Battlegear 2
+
 config.battlegear.title=Mine&Blade Battlegear 2 Configuration
 config.battlegear.category=Disabled Custom Item Renderers
 config.battlegear.warn=A restart is needed for changes to take effect
