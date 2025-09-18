@@ -77,6 +77,7 @@ public class BattlegearConfig {
     public static String[] disabledItems = new String[0];
     public static String[] disabledRecipies = new String[0];
     public static String[] disabledRenderers = new String[0];
+    public static float[] equippedShieldOffset = new float[3];
 
     public static double[] skeletonArrowSpawnRate = new double[ItemMBArrow.names.length];
     public static int[] quiverBarOffset = new int[2], shieldBarOffset = new int[2], battleBarOffset = new int[4];
@@ -126,6 +127,16 @@ public class BattlegearConfig {
         enableSkeletonQuiver = config.get(category, "Render quiver on skeleton back", enableSkeletonQuiver)
                 .getBoolean();
         forceHUD = config.get(category, "Force screen components rendering", forceHUD).getBoolean();
+
+        comments[3] = "Change to move the equipped shield in 1st person";
+        equippedShieldOffset[0] = config.get(category, "Equipped shield in 1st person relative size", 0, comments[3])
+                .getInt() / 100F;
+        equippedShieldOffset[1] = config
+                .get(category, "Equipped shield in 1st person relative vertical position", 0, comments[3]).getInt()
+                / 100F;
+        equippedShieldOffset[2] = config
+                .get(category, "Equipped shield in 1st person relative horizontal position", 0, comments[3]).getInt()
+                / 100F;
 
         category = "Skeleton CustomArrow Spawn Rate";
         config.addCustomCategoryComment(
