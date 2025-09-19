@@ -128,15 +128,31 @@ public class BattlegearConfig {
                 .getBoolean();
         forceHUD = config.get(category, "Force screen components rendering", forceHUD).getBoolean();
 
-        comments[3] = "Change to move the equipped shield in 1st person";
-        equippedShieldOffset[0] = config.get(category, "Equipped shield in 1st person relative size", 0, comments[3])
-                .getInt() / 100F;
-        equippedShieldOffset[1] = config
-                .get(category, "Equipped shield in 1st person relative vertical position", 0, comments[3]).getInt()
+        comments[3] = "Change to move the equipped shield in 1st person\nRecommended values between -100 and 100";
+        equippedShieldOffset[0] = config
+                .get(
+                        category,
+                        "Equipped shield in 1st person relative size",
+                        0,
+                        comments[3] + "\nHigher values -> make bigger",
+                        -100,
+                        100)
+                .getInt() * -1
                 / 100F;
-        equippedShieldOffset[2] = config
-                .get(category, "Equipped shield in 1st person relative horizontal position", 0, comments[3]).getInt()
-                / 100F;
+        equippedShieldOffset[1] = config.get(
+                category,
+                "Equipped shield in 1st person vertical position offset",
+                0,
+                comments[3] + "\nHigher values -> move right",
+                -100,
+                100).getInt() / 100F;
+        equippedShieldOffset[2] = config.get(
+                category,
+                "Equipped shield in 1st person horizontal position offset",
+                0,
+                comments[3] + "\nHigher values -> move up",
+                -100,
+                100).getInt() / 100F;
 
         category = "Skeleton CustomArrow Spawn Rate";
         config.addCustomCategoryComment(
