@@ -128,14 +128,14 @@ public class BattlegearConfig {
                 .getBoolean();
         forceHUD = config.get(category, "Force screen components rendering", forceHUD).getBoolean();
 
-        comments[3] = "Change to move the equipped shield in 1st person\nRecommended values between -100 and 100";
+        comments[3] = "Change to move the equipped shield in 1st person";
         equippedShieldOffset[0] = config
                 .get(
                         category,
                         "Equipped shield in 1st person relative size",
                         0,
-                        comments[3] + "\nHigher values -> make bigger",
-                        -100,
+                        comments[3] + "\nAllowed values between -60 and 100\nHigher values -> make bigger",
+                        -60,
                         100)
                 .getInt() * -1
                 / 100F;
@@ -143,14 +143,14 @@ public class BattlegearConfig {
                 category,
                 "Equipped shield in 1st person vertical position offset",
                 0,
-                comments[3] + "\nHigher values -> move right",
+                comments[3] + "\nAllowed values between -100 and 100\nHigher values -> move right",
                 -100,
                 100).getInt() / 100F;
         equippedShieldOffset[2] = config.get(
                 category,
                 "Equipped shield in 1st person horizontal position offset",
                 0,
-                comments[3] + "\nHigher values -> move up",
+                comments[3] + "\nAllowed values between -100 and 100\nHigher values -> move up",
                 -100,
                 100).getInt() / 100F;
 
