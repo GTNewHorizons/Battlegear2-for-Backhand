@@ -29,6 +29,7 @@ import mods.battlegear2.api.core.IBattlePlayer;
 import mods.battlegear2.api.core.IOffhandRender;
 import mods.battlegear2.api.shield.IArrowDisplay;
 import mods.battlegear2.api.shield.IShield;
+import mods.battlegear2.utils.BattlegearConfig;
 import xonin.backhand.api.core.BackhandUtils;
 
 public final class BattlegearRenderHelper {
@@ -113,7 +114,7 @@ public final class BattlegearRenderHelper {
             RenderPlayer var26 = (RenderPlayer) RenderManager.instance.getEntityRenderObject(mc.thePlayer);
             RenderPlayerEvent preRender = new RenderPlayerEvent.Pre(player, var26, frame);
             RenderPlayerEvent postRender = new RenderPlayerEvent.Post(player, var26, frame);
-            var7 = 0.8F;
+            var7 = 0.8F + BattlegearConfig.equippedShieldOffset[0];
             if (offhandRender.battlegear2$getOffHandItemToRender() != null) {
 
                 if (offhandRender.battlegear2$getOffHandItemToRender().getItem() instanceof IShield) {
@@ -124,8 +125,10 @@ public final class BattlegearRenderHelper {
                                     .getBashTimer(offhandRender.battlegear2$getOffHandItemToRender());
 
                     GL11.glTranslatef(
-                            -0.7F * var7 + 0.25F * MathHelper.sin(swingProgress * (float) Math.PI),
-                            -0.65F * var7 - (1.0F - progress) * 0.6F - 0.4F,
+                            (-0.7F + BattlegearConfig.equippedShieldOffset[1]) * var7
+                                    + 0.25F * MathHelper.sin(swingProgress * (float) Math.PI),
+                            (-0.65F + BattlegearConfig.equippedShieldOffset[2]) * var7 - (1.0F - progress) * 0.6F
+                                    - 0.4F,
                             -0.9F * var7 + 0.1F - 0.25F * MathHelper.sin(swingProgress * (float) Math.PI));
 
                     if (((IBattlePlayer) player).battlegear2$isBlockingWithShield()) {
