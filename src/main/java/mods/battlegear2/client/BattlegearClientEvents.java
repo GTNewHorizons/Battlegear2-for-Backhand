@@ -2,7 +2,6 @@ package mods.battlegear2.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.RenderSkeleton;
 import net.minecraft.entity.monster.EntitySkeleton;
@@ -139,24 +138,13 @@ public final class BattlegearClientEvents {
             }
             biped.bipedBody.postRender(BattlegearRenderHelper.RENDER_UNIT);
             GL11.glScalef(1.05F, 1.05F, 1.05F);
-            quiverModel.render(arrowCount, BattlegearRenderHelper.RENDER_UNIT);
 
-            Minecraft.getMinecraft().getTextureManager().bindTexture(quiverBase);
-            if (quiverStack.getItem() instanceof IDyable) {
-                int col = ((IDyable) quiver).getColor(quiverStack);
-                float red = (float) (col >> 16 & 255) / 255.0F;
-                float green = (float) (col >> 8 & 255) / 255.0F;
-                float blue = (float) (col & 255) / 255.0F;
-                GL11.glColor3f(red, green, blue);
-            }
-            quiverModel.render(0, BattlegearRenderHelper.RENDER_UNIT);
-            GL11.glColor3f(1, 1, 1);
+            int color = quiver instanceof IDyable ? ((IDyable) quiver).getColor(quiverStack) : -1;
+            quiverModel.renderQuiver(arrowCount, BattlegearRenderHelper.RENDER_UNIT, color);
 
             GL11.glPopMatrix();
         }
     }
-
-    private static final int SKELETON_ARROW = 5;
 
     /**
      * Render quiver on skeletons if possible
@@ -168,36 +156,24 @@ public final class BattlegearClientEvents {
                 && event.renderer instanceof RenderSkeleton) {
 
             GL11.glPushMatrix();
-            GL11.glDisable(GL11.GL_CULL_FACE);
 
             GL11.glColor3f(1, 1, 1);
-            Minecraft.getMinecraft().getTextureManager().bindTexture(quiverDetails);
 
-            double d0 = (((EntitySkeleton) event.entity).lastTickPosX
-                    + ((((EntitySkeleton) event.entity).posX - ((EntitySkeleton) event.entity).lastTickPosX)
-                            * BattlegearClientTickHandeler.getPartialTick()));
-            double d1 = (((EntitySkeleton) event.entity).lastTickPosY
-                    + ((((EntitySkeleton) event.entity).posY - ((EntitySkeleton) event.entity).lastTickPosY)
-                            * BattlegearClientTickHandeler.getPartialTick()));
-            double d2 = (((EntitySkeleton) event.entity).lastTickPosZ
-                    + (((EntitySkeleton) event.entity).posZ - ((EntitySkeleton) event.entity).lastTickPosZ)
-                            * BattlegearClientTickHandeler.getPartialTick());
+            float partialTicks = BattlegearClientTickHandeler.getPartialTick();
 
-            GL11.glTranslatef(
-                    (float) (d0 - RenderManager.renderPosX),
-                    (float) (d1 - RenderManager.renderPosY),
-                    (float) (d2 - RenderManager.renderPosZ));
+            GL11.glTranslatef((float) (event.x), (float) (event.y), (float) (event.z));
 
             GL11.glScalef(1, -1, 1);
 
-            float f2 = interpolateRotation(event.entity.prevRenderYawOffset, event.entity.renderYawOffset, 0);
+            float f2 = interpolateRotation(
+                    event.entity.prevRenderYawOffset,
+                    event.entity.renderYawOffset,
+                    partialTicks);
 
             GL11.glRotatef(180.0F - f2, 0.0F, 1.0F, 0.0F);
 
             if (event.entity.deathTime > 0) {
-                float f3 = ((float) event.entity.deathTime + BattlegearClientTickHandeler.getPartialTick() - 1.0F)
-                        / 20.0F
-                        * 1.6F;
+                float f3 = (event.entity.deathTime + partialTicks - 1.0F) / 20.0F * 1.6F;
                 f3 = MathHelper.sqrt_float(f3);
 
                 if (f3 > 1.0F) {
@@ -207,23 +183,16 @@ public final class BattlegearClientEvents {
                 GL11.glRotatef(-f3 * 90, 0.0F, 0.0F, 1.0F);
             }
 
-            GL11.glTranslatef(0, -1.5F, 0);
-
-            GL11.glRotatef(event.entity.rotationPitch, 0, 1, 0);
-
             if (event.entity.getEquipmentInSlot(3) != null) { // chest armor
-                GL11.glTranslatef(0, 0, BattlegearRenderHelper.RENDER_UNIT);
+                GL11.glTranslatef(0, -1.5f, BattlegearRenderHelper.RENDER_UNIT);
+            } else {
+                GL11.glTranslatef(0, -1.5F, 0);
             }
             ((ModelBiped) event.renderer.mainModel).bipedBody.postRender(BattlegearRenderHelper.RENDER_UNIT);
             GL11.glScalef(1.05F, 1.05F, 1.05F);
-            quiverModel.render(SKELETON_ARROW, BattlegearRenderHelper.RENDER_UNIT);
 
-            Minecraft.getMinecraft().getTextureManager().bindTexture(quiverBase);
-            GL11.glColor3f(0.10F, 0.10F, 0.10F);
-            quiverModel.render(0, BattlegearRenderHelper.RENDER_UNIT);
-            GL11.glColor3f(1, 1, 1);
+            quiverModel.renderQuiver(QuiverModel.SKELETON_ARROW, BattlegearRenderHelper.RENDER_UNIT, -1);
 
-            GL11.glEnable(GL11.GL_CULL_FACE);
             GL11.glPopMatrix();
         }
     }
