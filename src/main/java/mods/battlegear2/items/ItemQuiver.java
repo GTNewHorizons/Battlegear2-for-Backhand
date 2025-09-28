@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -18,6 +19,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.ForgeEventFactory;
 
+import baubles.api.BaubleType;
+import baubles.api.expanded.BaubleExpandedSlots;
+import baubles.api.expanded.BaubleItemHelper;
+import baubles.api.expanded.IBaubleExpanded;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mods.battlegear2.api.IDyable;
@@ -27,7 +32,9 @@ import mods.battlegear2.api.quiver.IArrowContainer2;
 import mods.battlegear2.api.quiver.QuiverArrowRegistry;
 import xonin.backhand.api.core.BackhandUtils;
 
-public class ItemQuiver extends Item implements IArrowContainer2, IDyable {
+public class ItemQuiver extends Item implements IArrowContainer2, IDyable, IBaubleExpanded {
+
+    private static final String[] baubleTypes = { BaubleExpandedSlots.quiverType };
 
     public IIcon quiverDetails;
     public IIcon quiverArrows;
@@ -47,23 +54,25 @@ public class ItemQuiver extends Item implements IArrowContainer2, IDyable {
     }
 
     @Override
-    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side,
-            float offX, float offY, float offZ) {
-        if (BackhandUtils.getOffhandItem(player) == stack) return false;
-        boolean flag = false;
-        for (int i = 0; i < getSlotCount(stack); i++) {
-            ItemStack temp = getStackInSlot(stack, i);
-            if (temp != null) {
-                EntityItem entityitem = ForgeHooks.onPlayerTossEvent(player, temp, true);
-                if (entityitem != null) {
-                    entityitem.delayBeforeCanPickup = 0;
-                    entityitem.func_145797_a(player.getCommandSenderName());
+    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
+
+        if (!player.isSneaking()) {
+            BaubleItemHelper.onBaubleRightClick(stack, world, player);
+        } else if (BackhandUtils.getOffhandItem(player) != stack) {
+            for (int i = 0; i < getSlotCount(stack); i++) {
+                ItemStack arrowStack = getStackInSlot(stack, i);
+                if (arrowStack != null) {
+                    EntityItem entityitem = ForgeHooks.onPlayerTossEvent(player, arrowStack, true);
+                    if (entityitem != null) {
+                        entityitem.delayBeforeCanPickup = 0;
+                        entityitem.func_145797_a(player.getCommandSenderName());
+                    }
+                    setStackInSlot(stack, i, null);
                 }
-                setStackInSlot(stack, i, null);
-                flag = true;
             }
         }
-        return flag;
+
+        return super.onItemRightClick(stack, world, player);
     }
 
     @Override
@@ -212,9 +221,11 @@ public class ItemQuiver extends Item implements IArrowContainer2, IDyable {
 
         int slotCount = getSlotCount(stack);
         int selected = getSelectedSlot(stack);
+        boolean containsArrows = false;
         for (int i = 0; i < slotCount; i++) {
             ItemStack slotStack = getStackInSlot(stack, i);
             if (slotStack != null) {
+                containsArrows = true;
                 list.add(
                         String.format(
                                 " %s%s: %s x %s",
@@ -231,6 +242,11 @@ public class ItemQuiver extends Item implements IArrowContainer2, IDyable {
                                 StatCollector.translateToLocal("attribute.quiver.arrow.empty")));
             }
         }
+        list.add("");
+        if (containsArrows) {
+            list.add(StatCollector.translateToLocal("attribute.quiver.tooltip.retrieve"));
+        }
+        BaubleItemHelper.addSlotInformation(list, baubleTypes);
     }
 
     @Override
@@ -285,5 +301,36 @@ public class ItemQuiver extends Item implements IArrowContainer2, IDyable {
             nbttagcompound.setTag("display", nbttagcompound1);
         }
         nbttagcompound1.setInteger("color", par2);
+    }
+
+    // Extended Baubles interface methods
+
+    @Override
+    public String[] getBaubleTypes(ItemStack itemstack) {
+        return baubleTypes;
+    }
+
+    @Override
+    public BaubleType getBaubleType(ItemStack itemstack) {
+        return null;
+    }
+
+    @Override
+    public void onWornTick(ItemStack itemstack, EntityLivingBase player) {}
+
+    @Override
+    public void onEquipped(ItemStack itemstack, EntityLivingBase player) {}
+
+    @Override
+    public void onUnequipped(ItemStack itemstack, EntityLivingBase player) {}
+
+    @Override
+    public boolean canEquip(ItemStack itemstack, EntityLivingBase player) {
+        return true;
+    }
+
+    @Override
+    public boolean canUnequip(ItemStack itemstack, EntityLivingBase player) {
+        return true;
     }
 }
