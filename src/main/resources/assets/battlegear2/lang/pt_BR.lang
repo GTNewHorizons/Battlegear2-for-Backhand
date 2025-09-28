@@ -110,6 +110,7 @@ attribute.shield.block.time=s Bloqueio
 attribute.shield.arrow.count=Flechas
 attribute.quiver.arrow.empty=Vazio
 attribute.quiver.arrow.count=Flechas
+attribute.quiver.tooltip.retrieve=Shift + Botão direito para reaver todas as flechas.
 
 lore.base.arrow.explosive=Tem uma potência explosiva
 lore.base.arrow.ender=Esse Olho do Fim parece com dor...
