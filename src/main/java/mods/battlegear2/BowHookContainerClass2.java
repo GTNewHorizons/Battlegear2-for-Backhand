@@ -5,6 +5,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -12,6 +13,7 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.ArrowLooseEvent;
 import net.minecraftforge.event.entity.player.ArrowNockEvent;
 
+import baubles.api.BaublesApi;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import mods.battlegear2.api.PlayerEventChild;
@@ -30,6 +32,7 @@ public final class BowHookContainerClass2 {
     private BowHookContainerClass2() {
         QuiverArrowRegistry.addQuiverSelection(new OffhandQuiverSelection());
         QuiverArrowRegistry.addQuiverSelection(new MainQuiverSelection());
+        QuiverArrowRegistry.addQuiverSelection(new BaublesQuiverSelection());
     }
 
     // Check for IArrowContainer in player opposite hand
@@ -57,6 +60,23 @@ public final class BowHookContainerClass2 {
                 temp = player.inventory.getStackInSlot(i);
                 if (isLoadedContainer(temp, bow, player)) return temp;
             }
+            return null;
+        }
+    }
+
+    // Check for IArrowContainer in the player Extended Baubles inventory
+    public static class BaublesQuiverSelection implements IQuiverSelection {
+
+        @Override
+        public ItemStack getQuiverFor(ItemStack bow, EntityPlayer player) {
+            IInventory playerBaubles = BaublesApi.getBaubles(player);
+            if (playerBaubles == null) return null;
+
+            for (int i = 0; i < playerBaubles.getSizeInventory(); i++) {
+                ItemStack item = playerBaubles.getStackInSlot(i);
+                if (isLoadedContainer(item, bow, player)) return item;
+            }
+
             return null;
         }
     }
