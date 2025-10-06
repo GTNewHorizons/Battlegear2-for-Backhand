@@ -7,7 +7,6 @@
     "logoFile": "bg-logo.png",
     "url": "http://www.curse.com/mc-mods/minecraft/mb-battlegear-2",
     "updateUrl": "",
-    "dependencies": ["Baubles|Expanded"],
     "authorList": ["nerd-boy", "GotoLink", "coolAlias"],
     "credits": "By nerd-boy & GotoLink, with help from coolAlias"
 }]
