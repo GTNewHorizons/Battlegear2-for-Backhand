@@ -32,6 +32,7 @@ import mods.battlegear2.api.weapons.WeaponRegistry;
 import mods.battlegear2.gui.BattlegearGUIHandeler;
 import mods.battlegear2.packet.BattlegearPacketHandeler;
 import mods.battlegear2.utils.BattlegearConfig;
+import mods.battlegear2.utils.ModCompat;
 
 @Mod(
         acceptedMinecraftVersions = "[1.7.10]",
@@ -78,6 +79,7 @@ public class Battlegear {
         packetHandler = new BattlegearPacketHandeler();
         packetHandler.register();
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new BattlegearGUIHandeler());
+        ModCompat.init(event);
     }
 
     @Mod.EventHandler
