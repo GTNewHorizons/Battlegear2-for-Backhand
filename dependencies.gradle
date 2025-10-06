@@ -3,5 +3,6 @@
 dependencies {
     api('com.github.GTNewHorizons:Backhand:1.8.0:dev')
     compileOnly('curse.maven:dynamic-lights-227874:2337326')
+    compileOnly('thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev')
     devOnlyNonPublishable("com.github.GTNewHorizons:NotEnoughItems:2.8.0-GTNH:dev")
 }
