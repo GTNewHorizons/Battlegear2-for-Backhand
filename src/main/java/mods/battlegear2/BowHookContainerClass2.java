@@ -14,6 +14,8 @@ import net.minecraftforge.event.entity.player.ArrowLooseEvent;
 import net.minecraftforge.event.entity.player.ArrowNockEvent;
 
 import baubles.api.BaublesApi;
+import baubles.common.BaublesExpanded;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import mods.battlegear2.api.PlayerEventChild;
@@ -32,7 +34,10 @@ public final class BowHookContainerClass2 {
     private BowHookContainerClass2() {
         QuiverArrowRegistry.addQuiverSelection(new OffhandQuiverSelection());
         QuiverArrowRegistry.addQuiverSelection(new MainQuiverSelection());
-        QuiverArrowRegistry.addQuiverSelection(new BaublesQuiverSelection());
+
+        if (Loader.isModLoaded(BaublesExpanded.MODID)) {
+            QuiverArrowRegistry.addQuiverSelection(new BaublesQuiverSelection());
+        }
     }
 
     // Check for IArrowContainer in player opposite hand

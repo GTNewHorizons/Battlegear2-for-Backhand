@@ -23,6 +23,9 @@ import baubles.api.BaubleType;
 import baubles.api.expanded.BaubleExpandedSlots;
 import baubles.api.expanded.BaubleItemHelper;
 import baubles.api.expanded.IBaubleExpanded;
+import baubles.common.BaublesExpanded;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mods.battlegear2.api.IDyable;
@@ -32,6 +35,7 @@ import mods.battlegear2.api.quiver.IArrowContainer2;
 import mods.battlegear2.api.quiver.QuiverArrowRegistry;
 import xonin.backhand.api.core.BackhandUtils;
 
+@Optional.Interface(iface = "baubles.api.expanded.IBaubleExpanded", modid = BaublesExpanded.MODID)
 public class ItemQuiver extends Item implements IArrowContainer2, IDyable, IBaubleExpanded {
 
     private static final String[] baubleTypes = { BaubleExpandedSlots.quiverType };
@@ -57,7 +61,9 @@ public class ItemQuiver extends Item implements IArrowContainer2, IDyable, IBaub
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
 
         if (!player.isSneaking()) {
-            BaubleItemHelper.onBaubleRightClick(stack, world, player);
+            if (Loader.isModLoaded(BaublesExpanded.MODID)) {
+                BaubleItemHelper.onBaubleRightClick(stack, world, player);
+            }
         } else if (BackhandUtils.getOffhandItem(player) != stack) {
             for (int i = 0; i < getSlotCount(stack); i++) {
                 ItemStack arrowStack = getStackInSlot(stack, i);
@@ -246,7 +252,10 @@ public class ItemQuiver extends Item implements IArrowContainer2, IDyable, IBaub
         if (containsArrows) {
             list.add(StatCollector.translateToLocal("attribute.quiver.tooltip.retrieve"));
         }
-        BaubleItemHelper.addSlotInformation(list, baubleTypes);
+
+        if (Loader.isModLoaded(BaublesExpanded.MODID)) {
+            BaubleItemHelper.addSlotInformation(list, baubleTypes);
+        }
     }
 
     @Override
@@ -305,30 +314,37 @@ public class ItemQuiver extends Item implements IArrowContainer2, IDyable, IBaub
 
     // Extended Baubles interface methods
 
+    @Optional.Method(modid = BaublesExpanded.MODID)
     @Override
     public String[] getBaubleTypes(ItemStack itemstack) {
         return baubleTypes;
     }
 
+    @Optional.Method(modid = BaublesExpanded.MODID)
     @Override
     public BaubleType getBaubleType(ItemStack itemstack) {
         return null;
     }
 
+    @Optional.Method(modid = BaublesExpanded.MODID)
     @Override
     public void onWornTick(ItemStack itemstack, EntityLivingBase player) {}
 
+    @Optional.Method(modid = BaublesExpanded.MODID)
     @Override
     public void onEquipped(ItemStack itemstack, EntityLivingBase player) {}
 
+    @Optional.Method(modid = BaublesExpanded.MODID)
     @Override
     public void onUnequipped(ItemStack itemstack, EntityLivingBase player) {}
 
+    @Optional.Method(modid = BaublesExpanded.MODID)
     @Override
     public boolean canEquip(ItemStack itemstack, EntityLivingBase player) {
         return true;
     }
 
+    @Optional.Method(modid = BaublesExpanded.MODID)
     @Override
     public boolean canUnequip(ItemStack itemstack, EntityLivingBase player) {
         return true;
