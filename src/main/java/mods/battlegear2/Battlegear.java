@@ -11,6 +11,8 @@ import net.minecraftforge.common.util.EnumHelper;
 
 import org.apache.logging.log4j.Logger;
 
+import baubles.api.expanded.BaubleExpandedSlots;
+import baubles.common.BaublesExpanded;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState;
@@ -70,6 +72,10 @@ public class Battlegear {
         proxy.registerKeyHandelers();
         proxy.registerTickHandelers();
         proxy.registerItemRenderers();
+
+        if (Loader.isModLoaded(BaublesExpanded.MODID)) {
+            BaubleExpandedSlots.tryAssignSlotsUpToMinimum(BaubleExpandedSlots.quiverType, 1);
+        }
     }
 
     @Mod.EventHandler
