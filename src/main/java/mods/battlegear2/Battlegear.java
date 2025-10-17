@@ -11,6 +11,8 @@ import net.minecraftforge.common.util.EnumHelper;
 
 import org.apache.logging.log4j.Logger;
 
+import baubles.api.expanded.BaubleExpandedSlots;
+import baubles.common.BaublesExpanded;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState;
@@ -32,6 +34,7 @@ import mods.battlegear2.api.weapons.WeaponRegistry;
 import mods.battlegear2.gui.BattlegearGUIHandeler;
 import mods.battlegear2.packet.BattlegearPacketHandeler;
 import mods.battlegear2.utils.BattlegearConfig;
+import mods.battlegear2.utils.ModCompat;
 
 @Mod(
         acceptedMinecraftVersions = "[1.7.10]",
@@ -69,6 +72,10 @@ public class Battlegear {
         proxy.registerKeyHandelers();
         proxy.registerTickHandelers();
         proxy.registerItemRenderers();
+
+        if (Loader.isModLoaded(BaublesExpanded.MODID)) {
+            BaubleExpandedSlots.tryAssignSlotsUpToMinimum(BaubleExpandedSlots.quiverType, 1);
+        }
     }
 
     @Mod.EventHandler
@@ -78,6 +85,7 @@ public class Battlegear {
         packetHandler = new BattlegearPacketHandeler();
         packetHandler.register();
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new BattlegearGUIHandeler());
+        ModCompat.init(event);
     }
 
     @Mod.EventHandler

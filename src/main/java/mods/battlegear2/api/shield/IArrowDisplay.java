@@ -12,7 +12,11 @@ import mods.battlegear2.items.ItemShield;
  */
 public interface IArrowDisplay {
 
+    String NBT_KEY_DISABLED = "disabled";
+
     public void setArrowCount(ItemStack stack, int count);
 
     public int getArrowCount(ItemStack stack);
+
+    public boolean isDisabled(ItemStack stack);
 }

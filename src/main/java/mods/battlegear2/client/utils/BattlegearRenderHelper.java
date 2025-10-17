@@ -29,6 +29,7 @@ import mods.battlegear2.api.core.IBattlePlayer;
 import mods.battlegear2.api.core.IOffhandRender;
 import mods.battlegear2.api.shield.IArrowDisplay;
 import mods.battlegear2.api.shield.IShield;
+import mods.battlegear2.utils.BattlegearConfig;
 import xonin.backhand.api.core.BackhandUtils;
 
 public final class BattlegearRenderHelper {
@@ -113,7 +114,7 @@ public final class BattlegearRenderHelper {
             RenderPlayer var26 = (RenderPlayer) RenderManager.instance.getEntityRenderObject(mc.thePlayer);
             RenderPlayerEvent preRender = new RenderPlayerEvent.Pre(player, var26, frame);
             RenderPlayerEvent postRender = new RenderPlayerEvent.Post(player, var26, frame);
-            var7 = 0.8F;
+            var7 = 0.8F + BattlegearConfig.equippedShieldOffset[0];
             if (offhandRender.battlegear2$getOffHandItemToRender() != null) {
 
                 if (offhandRender.battlegear2$getOffHandItemToRender().getItem() instanceof IShield) {
@@ -124,8 +125,10 @@ public final class BattlegearRenderHelper {
                                     .getBashTimer(offhandRender.battlegear2$getOffHandItemToRender());
 
                     GL11.glTranslatef(
-                            -0.7F * var7 + 0.25F * MathHelper.sin(swingProgress * (float) Math.PI),
-                            -0.65F * var7 - (1.0F - progress) * 0.6F - 0.4F,
+                            (-0.7F + BattlegearConfig.equippedShieldOffset[1]) * var7
+                                    + 0.25F * MathHelper.sin(swingProgress * (float) Math.PI),
+                            (-0.65F + BattlegearConfig.equippedShieldOffset[2]) * var7 - (1.0F - progress) * 0.6F
+                                    - 0.4F,
                             -0.9F * var7 + 0.1F - 0.25F * MathHelper.sin(swingProgress * (float) Math.PI));
 
                     if (((IBattlePlayer) player).battlegear2$isBlockingWithShield()) {
@@ -368,11 +371,13 @@ public final class BattlegearRenderHelper {
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glDepthFunc(GL11.GL_LEQUAL);
+        GL11.glColor3f(1, 1, 1); // Fixes weird color of Arrows
     }
 
     public static void renderArrows(ItemStack stack, boolean isEntity) {
-        if (stack.getItem() instanceof IArrowDisplay) {
-            int arrowCount = ((IArrowDisplay) stack.getItem()).getArrowCount(stack);
+        if (stack.getItem() instanceof IArrowDisplay arrowDisplay) {
+            if (arrowDisplay.isDisabled(stack)) return;
+            int arrowCount = arrowDisplay.getArrowCount(stack);
             // Bounds checking (rendering this many is quite silly, any more would look VERY silly)
             if (arrowCount > 64) arrowCount = 64;
             for (int i = 0; i < arrowCount; i++) {
@@ -404,7 +409,6 @@ public final class BattlegearRenderHelper {
 
         GL11.glRotatef(pitch, 0, 1, 0);
         GL11.glRotatef(yaw, 1, 0, 0);
-        GL11.glNormal3f(f10, 0, 0);
 
         double f2 = 12F / 32F * depth;
         double f5 = 5 / 32.0F;

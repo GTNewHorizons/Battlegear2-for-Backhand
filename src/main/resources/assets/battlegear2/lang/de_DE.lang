@@ -1,8 +1,45 @@
 tab.battle.title=M&B Battlegear 2
 
+render.always.slots=Slots immer rendern
+render.quiver.skeleton=Köcher an Skeletten rendern
+render.arrow.bow=Pfeil am Bogen rendern
+render.sheathed=Weggepackte Waffe rendert am Spieler: %s
+render.hud.forced=HUD-Rendern erzwingen
+
+gui.open.fake=GUI-Editor öffnen
+gui.fake.help1=Beweg Komponenten mit Drag & Drop
+gui.fake.help2=Köcherslots
+gui.fake.help3=Schildausdaueranzeige
+gui.fake.help4=Zweithand-Slots
+gui.fake.help5=Hand-Slots
+flag.design.save=Speichern
+flag.design.load=Laden
+flag.design.load.sections=Teil laden
+
+key.battleInv=Waffeninventar
+key.drawWeapons=Waffen ziehen
+key.openSigilEditor=Wappeneditor öffnen
+key.special=Spezial
+
+item.battlegear2:bow.greg.name=Gregs Bogen
+item.battlegear2:bow.iron.name=Eisenbogen
+item.battlegear2:bow.gold.name=Goldbogen
+item.battlegear2:bow.diamond.name=Diamantbogen
+
 item.battlegear2:heraldric.name=Wappenzeichen
 item.battlegear2:chain.name=Kette
 item.battlegear2:quiver.name=Köcher
+
+item.battlegear2:mb.arrow.name=Pfeil
+item.battlegear2:mb.arrow.ender.name=Enderpfeil
+item.battlegear2:mb.arrow.holy.name=Pfeil der heiligen Fackel
+item.battlegear2:mb.arrow.ice.name=Eisbepackter Pfeil
+item.battlegear2:mb.arrow.explosive.name=Explosionspfeil
+item.battlegear2:mb.arrow.flame.name=Feuerpfeil
+item.battlegear2:mb.arrow.piercing.name=Panzerbrechender Pfeil
+item.battlegear2:mb.arrow.poison.name=Giftpfeil
+item.battlegear2:mb.arrow.mystery.name=Magischer Pfeil
+item.battlegear2:mb.arrow.leech.name=Aussaugpfeil
 
 item.battlegear2:dagger.wood.name=Hölzerner Dolch
 item.battlegear2:dagger.stone.name=Steinerner Dolch
@@ -44,6 +81,22 @@ item.battlegear2:cloak.name=Umhang
 enchantment.slow_fall=Langsamer Fall
 enchantment.super_jump=Supersprung
 
+enchantment.bash.weightless=Leichtigkeit
+enchantment.bash.power=Schildschlagkraft
+enchantment.bash.damage=Schildschlaghärte
+enchantment.shield.usage=Schildeffizienz
+enchantment.shield.recover=Ausdauer
+enchantment.bow.loot=Glück des Jägers
+enchantment.bow.charge=Zugkraft
+
+tile.battlegear2:flagpole.name=Fahnenmast
+tile.battlegear2:flagpole.oak.name=Eichenfahnenmast
+tile.battlegear2:flagpole.spruce.name=Fichtenfahnenmast
+tile.battlegear2:flagpole.birch.name=Birkenfahnenmast
+tile.battlegear2:flagpole.jungle.name=Tropenfahnenmast
+tile.battlegear2:flagpole.iron.name=Eiserner Fahnenmast
+tile.battlegear2:flagpole.acacia.name=Akazienfahnenmast
+tile.battlegear2:flagpole.big_oak.name=Schwarzeichen-Fahnenmast
 tile.battlegear2:banner.name=Banner
 
 sigil.pattern.title=Schablone
@@ -58,13 +111,47 @@ sigil.helm.title=Helm
 sigil.colour.select=Wählen
 
 
-attribute.name.weapon.penetrateArmor=Rüstung Durchschlagen
+attribute.name.weapon.penetrateArmor=Rüstungsdurchdringung
 attribute.name.weapon.daze=Betäubung
 attribute.name.weapon.extendedReach=Reichweite
-attribute.name.weapon.attackSpeed=Attacken-Geschwindigkeit
-attribute.name.weapon.backstab=Rückenstich
+attribute.name.weapon.attackSpeed=Angriffsgeschwindigkeit
+attribute.name.weapon.backstab=Hinterlist
 attribute.name.weapon.mountedBonus=Berittener Schaden
-attribute.shield.block.time=%s s Block
+attribute.shield.block.time=%ss Block
 attribute.shield.arrow.count=%s Pfeile
 attribute.quiver.arrow.empty=Leer
 attribute.quiver.arrow.count=Pfeile
+
+lore.base.arrow.explosive=Hat etwas Wumms
+lore.base.arrow.holy=Steht dir gegen die Dunkelheit bei
+lore.base.arrow.ice=Effektiv gegen heiße Kreaturen wie Lohen oder Lavamonster
+lore.base.arrow.ender=Dieses Enderauge scheint Schmerzen zu haben...
+lore.base.arrow.flame=Kein Feuerzeug? Passt schon
+lore.base.arrow.piercing=Ungemein schneidfähig
+lore.base.arrow.poison=Teuer, oder?
+lore.base.arrow.mystery=Jeder mag Kekse!
+lore.base.arrow.leech=Lässt dich schwach fühlen
+
+lore.advanced.arrow.holy=Platziert eine Fackel dort, wo er landet
+lore.advanced.arrow.ice=Gut gegen alles, was gegen Feuer immun ist
+lore.advanced.arrow.explosive=Explosionsstärke variiert je nach kritischem Treffer
+lore.advanced.arrow.ender=Schnellreise oder -transport
+lore.advanced.arrow.flame=Zündet Monster, Spieler und Blöcke an
+lore.advanced.arrow.piercing=Stylisches Schafescheren
+lore.advanced.arrow.poison=Verteilt den Withereffekt
+lore.advanced.arrow.mystery=Schickt eine Nachricht von Friede und Versöhnung
+lore.advanced.arrow.leech=Hat einen vampirischen Touch
+
+tooltip.armour.points=Rüstung
+
+death.attack.battlegearExtra.backstab=%1$s wurde von %2$s in den Rücken gefallen
+death.attack.battlegearExtra.backstab.item=%1$s wurde von %2$s mit %3$s in den Rücken gefallen 
+death.attack.battlegearExtra.mounted=%1$s wurde von %2$s niedergeritten
+death.attack.battlegearExtra.mounted.item=%1$s wurde von %2$s mit %3$s niedergeritten
+
+tool.pen=Stift
+tool.rectangle=Rechteck
+tool.circle=Ellipse
+tool.flood=Füllen
+tool.text=Text
+tool.dropper=Pipette
