@@ -44,10 +44,6 @@ public final class BattlegearClientEvents {
 
     private final BattlegearInGameGUI inGameGUI;
     private static QuiverModel quiverModel;
-    // public static final ResourceLocation patterns
-    // = new ResourceLocation("battlegear2",
-    // "textures/heraldry/Patterns-small.png");
-    // public static int storageIndex;
 
     public static final BattlegearClientEvents INSTANCE = new BattlegearClientEvents();
 
@@ -178,7 +174,7 @@ public final class BattlegearClientEvents {
                 GL11.glTranslatef(0, -1.5F, 0);
             }
             ((ModelBiped) event.renderer.mainModel).bipedBody.postRender(BattlegearRenderHelper.RENDER_UNIT);
-
+            GL11.glEnable(GL11.GL_CULL_FACE);
             renderQuiver(QuiverModel.SKELETON_ARROW, -1);
 
             GL11.glPopMatrix();
