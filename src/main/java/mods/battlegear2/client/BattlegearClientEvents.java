@@ -1,6 +1,5 @@
 package mods.battlegear2.client;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.RenderSkeleton;
@@ -44,10 +43,9 @@ import xonin.backhand.api.core.BackhandUtils;
 public final class BattlegearClientEvents {
 
     private final BattlegearInGameGUI inGameGUI;
-    private final QuiverModel quiverModel;
-    private final ResourceLocation quiverDetails;
-    private final ResourceLocation quiverBase;
-    // public static final ResourceLocation patterns = new ResourceLocation("battlegear2",
+    private static QuiverModel quiverModel;
+    // public static final ResourceLocation patterns
+    // = new ResourceLocation("battlegear2",
     // "textures/heraldry/Patterns-small.png");
     // public static int storageIndex;
 
@@ -55,9 +53,6 @@ public final class BattlegearClientEvents {
 
     private BattlegearClientEvents() {
         inGameGUI = new BattlegearInGameGUI();
-        quiverModel = new QuiverModel();
-        quiverDetails = new ResourceLocation("battlegear2", "textures/armours/quiver/QuiverDetails.png");
-        quiverBase = new ResourceLocation("battlegear2", "textures/armours/quiver/QuiverBase.png");
     }
 
     /**
@@ -123,24 +118,20 @@ public final class BattlegearClientEvents {
 
         ItemStack quiverStack = QuiverArrowRegistry.getArrowContainer(event.entityPlayer);
         if (quiverStack != null && ((IArrowContainer2) quiverStack.getItem()).renderDefaultQuiverModel(quiverStack)) {
-
             IArrowContainer2 quiver = (IArrowContainer2) quiverStack.getItem();
             int maxStack = quiver.getSlotCount(quiverStack);
             int arrowCount = 0;
             for (int i = 0; i < maxStack; i++) {
                 arrowCount += quiver.getStackInSlot(quiverStack, i) == null ? 0 : 1;
             }
-            GL11.glColor3f(1, 1, 1);
-            Minecraft.getMinecraft().getTextureManager().bindTexture(quiverDetails);
             GL11.glPushMatrix();
             if (event.entityPlayer.getEquipmentInSlot(3) != null) { // chest armor
                 GL11.glTranslatef(0, 0, BattlegearRenderHelper.RENDER_UNIT);
             }
             biped.bipedBody.postRender(BattlegearRenderHelper.RENDER_UNIT);
-            GL11.glScalef(1.05F, 1.05F, 1.05F);
 
             int color = quiver instanceof IDyable ? ((IDyable) quiver).getColor(quiverStack) : -1;
-            quiverModel.renderQuiver(arrowCount, BattlegearRenderHelper.RENDER_UNIT, color);
+            renderQuiver(arrowCount, color);
 
             GL11.glPopMatrix();
         }
@@ -156,8 +147,6 @@ public final class BattlegearClientEvents {
                 && event.renderer instanceof RenderSkeleton) {
 
             GL11.glPushMatrix();
-
-            GL11.glColor3f(1, 1, 1);
 
             float partialTicks = BattlegearClientTickHandeler.getPartialTick();
 
@@ -189,12 +178,18 @@ public final class BattlegearClientEvents {
                 GL11.glTranslatef(0, -1.5F, 0);
             }
             ((ModelBiped) event.renderer.mainModel).bipedBody.postRender(BattlegearRenderHelper.RENDER_UNIT);
-            GL11.glScalef(1.05F, 1.05F, 1.05F);
 
-            quiverModel.renderQuiver(QuiverModel.SKELETON_ARROW, BattlegearRenderHelper.RENDER_UNIT, -1);
+            renderQuiver(QuiverModel.SKELETON_ARROW, -1);
 
             GL11.glPopMatrix();
         }
+    }
+
+    private static void renderQuiver(int arrowCount, int color) {
+        if (quiverModel == null) {
+            quiverModel = new QuiverModel();
+        }
+        quiverModel.renderQuiver(arrowCount, color);
     }
 
     /**

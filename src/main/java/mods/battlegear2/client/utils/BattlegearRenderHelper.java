@@ -389,48 +389,6 @@ public final class BattlegearRenderHelper {
         }
     }
 
-    public static void batchRenderArrows(float x, float y, float z, int amount, float[][] arrowOffsets) {
-
-        GL11.glTranslatef(x, y, z);
-        GL11.glScalef(0.05f, 0.05f, -0.05f);
-
-        double u = 12F / 32F;
-        double v = 5 / 32.0F;
-        Tessellator tessellator = Tessellator.instance;
-
-        float lastPosX = 0.0f;
-        float lastPosY = 0.0f;
-        float lastPosZ = 0.0f;
-        GL11.glNormal3f(0, 0, 0.05f);
-        // tessellator.setNormal(0, 0, 0.05f);
-        for (int i = 0; i < amount; i++) {
-            float[] offset = arrowOffsets[i];
-
-            // Transform coords and restore last transformation (saves on glPush/Pop matrix calls)
-            GL11.glTranslatef((offset[2] - lastPosX), (offset[1] - lastPosY), (offset[0] - lastPosZ));
-            for (int j = 0; j < 2; j++) {
-                GL11.glRotatef(90, 1, 0, 0);
-                tessellator.startDrawingQuads();
-                tessellator.addVertexWithUV(0, -2, 0, u, 0);
-                tessellator.addVertexWithUV(16, -2, 0, 0, 0);
-                tessellator.addVertexWithUV(16, 2, 0, 0, v);
-                tessellator.addVertexWithUV(0, 2, 0, u, v);
-                tessellator.draw();
-
-                tessellator.startDrawingQuads();
-                tessellator.addVertexWithUV(0, 2, 0, u, v);
-                tessellator.addVertexWithUV(16, 2, 0, 0, u);
-                tessellator.addVertexWithUV(16, -2, 0, 0, 0);
-                tessellator.addVertexWithUV(0, -2, 0, u, 0);
-                tessellator.draw();
-            }
-            lastPosX = offset[2];
-            lastPosY = offset[1];
-            lastPosZ = offset[0];
-
-        }
-    }
-
     public static void renderArrow(boolean isEntity, float x, float y, float depth, float pitch, float yaw) {
         GL11.glPushMatrix();
         // depth = 1;
