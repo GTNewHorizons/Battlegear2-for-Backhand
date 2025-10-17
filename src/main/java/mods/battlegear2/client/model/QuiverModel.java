@@ -109,7 +109,7 @@ public class QuiverModel {
         matrix.translate(-14F / 16F + 0.925f, -3F / 16F + 0.475f, 2.5F / 16F);
         matrix.scale(0.05f, 0.05f, -0.05f);
         float f2 = 0.0F;
-        float f3 = 12f / 32.0F;
+        float f3 = ARROW_X_WIDTH / 32.0F;
         float f4 = 0f;
         float f5 = 5f / 32.0F;
         float f6 = 0.0F;
@@ -142,8 +142,8 @@ public class QuiverModel {
             for (int j = 0; j < 4; j++) {
                 matrix.rotate((float) Math.PI / 2f, 1, 0, 0);
                 addVertexWithUV(tessellator, vec, matrix, -8, -2, 0, f2, f4);
-                addVertexWithUV(tessellator, vec, matrix, 4, -2, 0, f3, f4);
-                addVertexWithUV(tessellator, vec, matrix, 4, 2, 0, f3, f5);
+                addVertexWithUV(tessellator, vec, matrix, ARROW_X_WIDTH - 8, -2, 0, f3, f4);
+                addVertexWithUV(tessellator, vec, matrix, ARROW_X_WIDTH - 8, 2, 0, f3, f5);
                 addVertexWithUV(tessellator, vec, matrix, -8, 2, 0, f2, f5);
             }
 
