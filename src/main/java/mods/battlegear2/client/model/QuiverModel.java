@@ -1,5 +1,6 @@
 package mods.battlegear2.client.model;
 
+import java.lang.Math;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Random;
