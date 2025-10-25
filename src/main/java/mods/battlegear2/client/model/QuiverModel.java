@@ -1,22 +1,20 @@
 package mods.battlegear2.client.model;
 
-import java.lang.Math;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Random;
 
-import com.gtnewhorizon.gtnhlib.client.model.BakedModelBuilder;
-import com.gtnewhorizon.gtnhlib.client.model.NormalHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 
-import net.minecraft.util.Vec3;
 import org.joml.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import com.gtnewhorizon.gtnhlib.client.model.BakedModelBuilder;
+import com.gtnewhorizon.gtnhlib.client.model.NormalHelper;
 import com.gtnewhorizon.gtnhlib.client.renderer.CapturingTessellator;
 import com.gtnewhorizon.gtnhlib.client.renderer.TessellatorManager;
 import com.gtnewhorizon.gtnhlib.client.renderer.quad.QuadView;
@@ -50,7 +48,7 @@ public class QuiverModel {
         Random r = new Random(42);
         for (int i = 0; i < arrowPos.length; i++) {
             arrowPos[i] = new float[] { -r.nextFloat() * 2F / 16F * 20F, r.nextFloat() * 4F,
-                   -r.nextFloat() * 3F / 16F * 20F };
+                    -r.nextFloat() * 3F / 16F * 20F };
         }
 
         quiverVBO = genQuiverVBO();
@@ -119,14 +117,13 @@ public class QuiverModel {
         matrix.rotate((float) Math.PI, 0, 0, 1);
 
         Matrix3f normalMat = NormalHelper.getNormalMatrix(matrix);
-        Vector3f normal = new  Vector3f(-0.05f, 0, 0);
+        Vector3f normal = new Vector3f(-0.05f, 0, 0);
         tessellator.setNormalTransformed(normal, normalMat);
         for (int i = 0; i < SKELETON_ARROW; i++) {
             matrix.pushMatrix();
             float[] arrow = arrowPos[i];
             matrix.translate(arrow[2], arrow[1], arrow[0]);
             matrix.rotate((float) Math.PI / 4f, 1, 0, 0);
-
 
             addVertexWithUV(tessellator, vec, matrix, -7, -2, -2, f6, f8);
             addVertexWithUV(tessellator, vec, matrix, -7, -2, 2, f7, f8);
@@ -137,7 +134,6 @@ public class QuiverModel {
             addVertexWithUV(tessellator, vec, matrix, -7, 2, 2, f7, f8);
             addVertexWithUV(tessellator, vec, matrix, -7, -2, 2, f7, f9);
             addVertexWithUV(tessellator, vec, matrix, -7, -2, -2, f6, f9);
-
 
             for (int j = 0; j < 4; j++) {
                 matrix.rotate((float) Math.PI / 2f, 1, 0, 0);
@@ -241,7 +237,7 @@ public class QuiverModel {
         renderEngine.bindTexture(BattlegearRenderHelper.DEFAULT_ARROW);
         GL11.glColor3f(0.75f, 0.75f, 0.75f);
         if (arrowCount == SKELETON_ARROW) {
-            //renderPlayerArrows(arrowCount);
+            // renderPlayerArrows(arrowCount);
             skeletonArrowVBO.setupState();
             skeletonArrowVBO.draw();
             skeletonArrowVBO.cleanupState();
