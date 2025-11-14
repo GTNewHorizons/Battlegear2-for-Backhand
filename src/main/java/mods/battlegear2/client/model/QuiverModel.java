@@ -1,7 +1,5 @@
 package mods.battlegear2.client.model;
 
-import java.nio.ByteBuffer;
-import java.util.List;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
@@ -9,7 +7,11 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 
-import org.joml.*;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -17,7 +19,6 @@ import com.gtnewhorizon.gtnhlib.client.model.BakedModelBuilder;
 import com.gtnewhorizon.gtnhlib.client.model.NormalHelper;
 import com.gtnewhorizon.gtnhlib.client.renderer.CapturingTessellator;
 import com.gtnewhorizon.gtnhlib.client.renderer.TessellatorManager;
-import com.gtnewhorizon.gtnhlib.client.renderer.quad.QuadView;
 import com.gtnewhorizon.gtnhlib.client.renderer.vbo.VertexBuffer;
 import com.gtnewhorizon.gtnhlib.client.renderer.vertex.DefaultVertexFormat;
 
@@ -97,10 +98,8 @@ public class QuiverModel {
     private VertexBuffer genSkeletonArrowsVBO() {
         Matrix4fStack matrix = new Matrix4fStack(2);
         matrix.rotate(zRotation, 0, 0, 1);
-        VertexBuffer vbo = new VertexBuffer(DefaultVertexFormat.POSITION_TEXTURE_NORMAL, GL11.GL_QUADS);
-        vbo.bind();
-        TessellatorManager.startCapturing();
-        CapturingTessellator tessellator = (CapturingTessellator) TessellatorManager.get();
+
+        CapturingTessellator tessellator = TessellatorManager.startCapturingAndGet();
         tessellator.startDrawing(GL11.GL_QUADS);
         Vector4f vec = new Vector4f();
         // Please don't ask me what any of these floats mean. I have no idea, but it works, and that's all I care about.
@@ -145,13 +144,8 @@ public class QuiverModel {
 
             matrix.popMatrix();
         }
-        List<QuadView> quads = TessellatorManager.stopCapturingToPooledQuads();
-        ByteBuffer bytes = CapturingTessellator.quadsToBuffer(quads, DefaultVertexFormat.POSITION_TEXTURE_NORMAL);
-        vbo.upload(bytes);
-        vbo.unbind();
 
-        tessellator.clearQuads();
-        return vbo;
+        return TessellatorManager.stopCapturingToVAO(DefaultVertexFormat.POSITION_TEXTURE_NORMAL);
     }
 
     // Copied from Minecraft (Battlegear's arrows rendering were weird)
