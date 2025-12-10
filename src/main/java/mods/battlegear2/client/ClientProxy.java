@@ -27,7 +27,6 @@ import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 import cpw.mods.fml.common.registry.GameData;
 import mods.battlegear2.Battlegear;
 import mods.battlegear2.CommonProxy;
-import mods.battlegear2.api.core.BattlegearUtils;
 import mods.battlegear2.api.heraldry.IHeraldryItem;
 import mods.battlegear2.api.shield.IShield;
 import mods.battlegear2.client.renderer.BowRenderer;
@@ -40,7 +39,6 @@ import mods.battlegear2.client.renderer.HeraldryItemRenderer;
 import mods.battlegear2.client.renderer.QuiverItremRenderer;
 import mods.battlegear2.client.renderer.ShieldRenderer;
 import mods.battlegear2.client.renderer.SpearRenderer;
-import mods.battlegear2.client.utils.BattlegearClientUtils;
 import mods.battlegear2.heraldry.TileEntityFlagPole;
 import mods.battlegear2.packet.BattlegearAnimationPacket;
 import mods.battlegear2.packet.SpecialActionPacket;
@@ -58,7 +56,6 @@ public final class ClientProxy extends CommonProxy {
         super.registerTickHandelers();
         MinecraftForge.EVENT_BUS.register(BattlegearClientEvents.INSTANCE);
         FMLCommonHandler.instance().bus().register(BattlegearClientTickHandeler.INSTANCE);
-        BattlegearUtils.RENDER_BUS.register(new BattlegearClientUtils());
     }
 
     @Override
