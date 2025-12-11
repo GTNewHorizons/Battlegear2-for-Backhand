@@ -39,7 +39,7 @@ public final class BattlegearRenderHelper {
     public static float PROGRESS_INCREMENT_LIMIT = 0.4F;
 
     private static final ResourceLocation ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
-    private static final ResourceLocation DEFAULT_ARROW = new ResourceLocation("textures/entity/arrow.png");
+    public static final ResourceLocation DEFAULT_ARROW = new ResourceLocation("textures/entity/arrow.png");
 
     public static final float[] arrowX = new float[64];
     public static final float[] arrowY = new float[arrowX.length];
