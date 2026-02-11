@@ -2,6 +2,9 @@ package mods.battlegear2.client.model;
 
 import java.util.Random;
 
+import com.gtnewhorizon.gtnhlib.client.renderer.DirectTessellator;
+import com.gtnewhorizon.gtnhlib.client.renderer.vao.IVertexArrayObject;
+import com.gtnewhorizon.gtnhlib.client.renderer.vao.VertexBufferType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -17,10 +20,7 @@ import org.lwjgl.opengl.GL12;
 
 import com.gtnewhorizon.gtnhlib.client.model.BakedModelBuilder;
 import com.gtnewhorizon.gtnhlib.client.model.NormalHelper;
-import com.gtnewhorizon.gtnhlib.client.renderer.CapturingTessellator;
 import com.gtnewhorizon.gtnhlib.client.renderer.TessellatorManager;
-import com.gtnewhorizon.gtnhlib.client.renderer.vbo.VertexBuffer;
-import com.gtnewhorizon.gtnhlib.client.renderer.vertex.DefaultVertexFormat;
 
 import mods.battlegear2.client.utils.BattlegearRenderHelper;
 
@@ -35,9 +35,9 @@ public class QuiverModel {
             "battlegear2",
             "textures/armours/quiver/QuiverBase.png");
 
-    private final VertexBuffer quiverVBO;
+    private final IVertexArrayObject quiverVBO;
 
-    private final VertexBuffer skeletonArrowVBO;
+    private final IVertexArrayObject skeletonArrowVBO;
 
     private final float[][] arrowPos = new float[10][3];
 
@@ -57,7 +57,7 @@ public class QuiverModel {
         skeletonArrowVBO = genSkeletonArrowsVBO();
     }
 
-    private VertexBuffer genQuiverVBO() {
+    private IVertexArrayObject genQuiverVBO() {
         final float scale = BattlegearRenderHelper.RENDER_UNIT;
         BakedModelBuilder model = new BakedModelBuilder(64, 32);
 
@@ -92,14 +92,14 @@ public class QuiverModel {
                 .addBoxVertices(1.0F, -3F, 0.0F, 4, 1, 3, scale);
         //spotless:on
 
-        return model.finish(DefaultVertexFormat.POSITION_TEXTURE_NORMAL);
+        return model.finish();
     }
 
-    private VertexBuffer genSkeletonArrowsVBO() {
+    private IVertexArrayObject genSkeletonArrowsVBO() {
         Matrix4fStack matrix = new Matrix4fStack(2);
         matrix.rotate(zRotation, 0, 0, 1);
 
-        CapturingTessellator tessellator = TessellatorManager.startCapturingAndGet();
+        DirectTessellator tessellator = TessellatorManager.startCapturingDirect();
         tessellator.startDrawing(GL11.GL_QUADS);
         Vector4f vec = new Vector4f();
         // Please don't ask me what any of these floats mean. I have no idea, but it works, and that's all I care about.
@@ -117,7 +117,7 @@ public class QuiverModel {
 
         Matrix3f normalMat = NormalHelper.getNormalMatrix(matrix);
         Vector3f normal = new Vector3f(-0.05f, 0, 0);
-        tessellator.setNormalTransformed(normal, normalMat);
+        NormalHelper.setNormalTransformed(tessellator, normal, normalMat);
         for (int i = 0; i < SKELETON_ARROW; i++) {
             matrix.pushMatrix();
             float[] arrow = arrowPos[i];
@@ -145,7 +145,7 @@ public class QuiverModel {
             matrix.popMatrix();
         }
 
-        return TessellatorManager.stopCapturingToVAO(DefaultVertexFormat.POSITION_TEXTURE_NORMAL);
+        return tessellator.stopCapturingToVBO(VertexBufferType.IMMUTABLE);
     }
 
     // Copied from Minecraft (Battlegear's arrows rendering were weird)
@@ -211,7 +211,7 @@ public class QuiverModel {
         final TextureManager renderEngine = Minecraft.getMinecraft().renderEngine;
         GL11.glColor3f(1, 1, 1);
 
-        quiverVBO.setupState();
+        quiverVBO.bind();
         renderEngine.bindTexture(quiverDetails);
 
         quiverVBO.draw();
@@ -231,12 +231,11 @@ public class QuiverModel {
         renderEngine.bindTexture(BattlegearRenderHelper.DEFAULT_ARROW);
         GL11.glColor3f(0.75f, 0.75f, 0.75f);
         if (arrowCount == SKELETON_ARROW) {
-            // renderPlayerArrows(arrowCount);
-            skeletonArrowVBO.setupState();
+            skeletonArrowVBO.bind();
             skeletonArrowVBO.draw();
-            skeletonArrowVBO.cleanupState();
+            skeletonArrowVBO.unbind();
         } else {
-            quiverVBO.cleanupState();
+            quiverVBO.unbind();
             renderQuiverArrows(arrowCount, arrowPos);
         }
         GL11.glColor3f(1, 1, 1);
