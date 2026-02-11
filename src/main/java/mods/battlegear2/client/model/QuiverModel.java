@@ -2,9 +2,6 @@ package mods.battlegear2.client.model;
 
 import java.util.Random;
 
-import com.gtnewhorizon.gtnhlib.client.renderer.DirectTessellator;
-import com.gtnewhorizon.gtnhlib.client.renderer.vao.IVertexArrayObject;
-import com.gtnewhorizon.gtnhlib.client.renderer.vao.VertexBufferType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -20,7 +17,10 @@ import org.lwjgl.opengl.GL12;
 
 import com.gtnewhorizon.gtnhlib.client.model.BakedModelBuilder;
 import com.gtnewhorizon.gtnhlib.client.model.NormalHelper;
+import com.gtnewhorizon.gtnhlib.client.renderer.DirectTessellator;
 import com.gtnewhorizon.gtnhlib.client.renderer.TessellatorManager;
+import com.gtnewhorizon.gtnhlib.client.renderer.vao.IVertexArrayObject;
+import com.gtnewhorizon.gtnhlib.client.renderer.vao.VertexBufferType;
 
 import mods.battlegear2.client.utils.BattlegearRenderHelper;
 
