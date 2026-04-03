@@ -3,9 +3,7 @@ package mods.battlegear2;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemBlock;
@@ -13,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
@@ -24,7 +21,6 @@ import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
-import mods.battlegear2.api.EnchantmentHelper;
 import mods.battlegear2.api.IHandListener;
 import mods.battlegear2.api.IOffhandDual;
 import mods.battlegear2.api.IOffhandListener;
@@ -37,7 +33,6 @@ import mods.battlegear2.api.quiver.IArrowContainer2;
 import mods.battlegear2.api.shield.IArrowCatcher;
 import mods.battlegear2.api.shield.IShield;
 import mods.battlegear2.api.weapons.IExtendedReachWeapon;
-import mods.battlegear2.enchantments.BaseEnchantment;
 import mods.battlegear2.packet.BattlegearShieldFlashPacket;
 import mods.battlegear2.utils.EnumBGAnimations;
 import xonin.backhand.api.core.BackhandUtils;
@@ -393,46 +388,5 @@ public final class BattlemodeHookContainerClass {
             yaw -= 360;
         }
         return yaw;
-    }
-
-    /**
-     * Apply the "bow loot" enchantment, on drops from mobs dying of projectile based damage Search first the right hand
-     * of the archer, then the left hand (if archer is a player in battlemode)
-     */
-    @SubscribeEvent
-    public void onDrop(LivingDropsEvent event) {
-        if (BaseEnchantment.bowLoot.isPresent() && event.source.isProjectile()
-                && event.source.getEntity() instanceof EntityLivingBase) {
-            ItemStack stack = ((EntityLivingBase) event.source.getEntity()).getHeldItem();
-            if (!addLootFromEnchant(stack, event.drops) && event.recentlyHit
-                    && event.source.getEntity() instanceof IBattlePlayer
-                    && !isFake(event.source.getEntity())) {
-                EntityPlayer player = (EntityPlayer) event.source.getEntity();
-                stack = BackhandUtils.getOffhandItem(player);
-                addLootFromEnchant(stack, event.drops);
-            }
-        }
-    }
-
-    /**
-     * The "bow loot" enchantment effect: Adds to each stack size the enchantment level
-     *
-     * @param bow   the stack to check for the enchantment
-     * @param drops to add drops to
-     * @return true if the stack is enchanted with "bow loot"
-     */
-    private boolean addLootFromEnchant(ItemStack bow, List<EntityItem> drops) {
-        int lvl = EnchantmentHelper.getEnchantmentLevel(BaseEnchantment.bowLoot, bow);
-        if (lvl > 0) {
-            ItemStack drop;
-            for (EntityItem items : drops) {
-                drop = items.getEntityItem();
-                if (drop != null && drop.getMaxStackSize() >= drop.stackSize + lvl) {
-                    drop.stackSize += lvl;
-                }
-            }
-            return true;
-        }
-        return false;
     }
 }

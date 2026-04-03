@@ -57,6 +57,7 @@ public final class BattlegearLoadingPlugin implements IEarlyMixinLoader, IFMLLoa
     @Override
     public List<String> getMixins(Set<String> loadedCoreMods) {
         final List<String> mixins = new ArrayList<>();
+        mixins.add("MixinEnchantmentHelper");
         mixins.add("MixinEntityPlayer");
         mixins.add("MixinItemStack");
         if (FMLLaunchHandler.side().isClient()) {
