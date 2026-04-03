@@ -1,5 +1,9 @@
 package mods.battlegear2.items.arrows;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -9,6 +13,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
@@ -23,6 +28,8 @@ import net.minecraftforge.event.entity.living.EnderTeleportEvent;
  * @author GotoLink
  */
 public class EntityEnderArrow extends AbstractMBArrow {
+
+    public static final Set<String> BLOCK_BLACKLIST = new HashSet<>();
 
     public static float tpRange = 32.0F;
     public static String PARTICLES = "portal", SOUND = "mob.endermen.portal";
@@ -155,53 +162,122 @@ public class EntityEnderArrow extends AbstractMBArrow {
     @Override
     public void onHitGround(int x, int y, int z) {
         this.setDead();
-        if (shootingEntity instanceof EntityPlayer && shootingEntity.isSneaking()) {
+        if (shootingEntity instanceof EntityPlayer player && shootingEntity.isSneaking()) {
+            if (!worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops")) return;
+
             Block block = worldObj.getBlock(x, y, z);
-            if (block != Blocks.bedrock && this.worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops")) {
-                int meta = worldObj.getBlockMetadata(x, y, z);
-                ItemStack item = new ItemStack(block, 1, meta);
-                if (item.getItem() == null) {
-                    return;
+            int meta = worldObj.getBlockMetadata(x, y, z);
+
+            if (!canHarvestBlock(worldObj, x, y, z, block, meta)) return;
+
+            ArrayList<ItemStack> drops = new ArrayList<>();
+
+            if (block.canSilkHarvest(worldObj, player, x, y, z, meta)) {
+                ItemStack silkDrop = createSilkTouchDrop(block, meta);
+                if (silkDrop != null) {
+                    drops.add(silkDrop);
                 }
-                worldObj.setBlockToAir(x, y, z);
-                if (!((EntityPlayer) shootingEntity).inventory.addItemStackToInventory(item)) {
-                    EntityItem entityitem = ForgeHooks.onPlayerTossEvent((EntityPlayer) shootingEntity, item, true);
-                    if (entityitem != null) {
-                        entityitem.delayBeforeCanPickup = 0;
-                        entityitem.func_145797_a(shootingEntity.getCommandSenderName());
-                    }
-                }
+            } else {
+                drops.addAll(block.getDrops(worldObj, x, y, z, meta, 0));
             }
-        } else if (shootingEntity instanceof EntityLivingBase) {
-            while (y < 255 && !(worldObj.isAirBlock(x, y, z) && worldObj.isAirBlock(x, y + 1, z))) {
-                y++;
-                if (worldObj.getBlock(x, y, z) == Blocks.bedrock) {
-                    break;
-                }
+
+            if (drops.isEmpty()) return;
+
+            block.onBlockHarvested(worldObj, x, y, z, meta, player);
+
+            if (!block.removedByPlayer(worldObj, player, x, y, z, true)) return;
+
+            block.onBlockDestroyedByPlayer(worldObj, x, y, z, meta);
+            worldObj.setBlockToAir(x, y, z);
+
+            for (ItemStack drop : drops) {
+                if (drop == null || drop.getItem() == null) continue;
+
+                if (player.inventory.addItemStackToInventory(drop)) continue;
+
+                EntityItem entityitem = ForgeHooks.onPlayerTossEvent(player, drop, true);
+                if (entityitem == null) continue;
+
+                entityitem.delayBeforeCanPickup = 0;
+                entityitem.func_145797_a(player.getCommandSenderName());
             }
-            if (!worldObj.isAirBlock(x, y, z)) {
-                while (y > 0 && !(worldObj.isAirBlock(x, y, z) && worldObj.isAirBlock(x, y - 1, z))) {
-                    y--;
-                    if (worldObj.getBlock(x, y, z) == Blocks.bedrock) {
-                        break;
-                    }
-                }
-            }
-            if (!worldObj.isAirBlock(x, y, z)) {
-                return;
-            }
-            if (shootingEntity instanceof EntityPlayerMP
-                    && !(((EntityPlayerMP) this.shootingEntity).playerNetServerHandler.func_147362_b().isChannelOpen()
-                            && shootingEntity.worldObj == this.worldObj))
-                return;
-            handleTeleportEvent(
-                    new EnderTeleportEvent(
-                            (EntityLivingBase) shootingEntity,
-                            x + 0.5F,
-                            y,
-                            z + 0.5F,
-                            getDamageAgainst((EntityLivingBase) shootingEntity)));
+
+            return;
         }
+
+        if (!(shootingEntity instanceof EntityLivingBase)) return;
+
+        while (y < 255 && !(worldObj.isAirBlock(x, y, z) && worldObj.isAirBlock(x, y + 1, z))) {
+            if (worldObj.getBlock(x, y, z) == Blocks.bedrock) return;
+            y++;
+        }
+
+        if (!worldObj.isAirBlock(x, y, z)) {
+            while (y > 0 && !(worldObj.isAirBlock(x, y, z) && worldObj.isAirBlock(x, y - 1, z))) {
+                if (worldObj.getBlock(x, y, z) == Blocks.bedrock) return;
+                y--;
+            }
+        }
+
+        if (!worldObj.isAirBlock(x, y, z)) return;
+
+        if (shootingEntity instanceof EntityPlayerMP playerMP) {
+            if (!(playerMP.playerNetServerHandler.func_147362_b().isChannelOpen()
+                    && shootingEntity.worldObj == this.worldObj)) {
+                return;
+            }
+        }
+
+        handleTeleportEvent(
+                new EnderTeleportEvent(
+                        (EntityLivingBase) shootingEntity,
+                        x + 0.5F,
+                        y,
+                        z + 0.5F,
+                        getDamageAgainst((EntityLivingBase) shootingEntity)));
+    }
+
+    private ItemStack createSilkTouchDrop(Block block, int meta) {
+        Item item = Item.getItemFromBlock(block);
+        if (item == null) return null;
+
+        return new ItemStack(item, 1, block.damageDropped(meta));
+    }
+
+    private boolean canHarvestBlock(World world, int x, int y, int z, Block block, int meta) {
+        if (block == null || block.isAir(world, x, y, z)) {
+            return false;
+        }
+
+        if (block.getBlockHardness(world, x, y, z) < 0) {
+            return false;
+        }
+
+        if (isBlacklisted(block, meta)) {
+            return false;
+        }
+
+        String key = Block.blockRegistry.getNameForObject(block) + ":" + meta;
+        return !BLOCK_BLACKLIST.contains(key);
+    }
+
+    private boolean isBlacklisted(Block block, int meta) {
+        String name = Block.blockRegistry.getNameForObject(block);
+
+        if (name == null) {
+            return false;
+        }
+
+        int idx = name.indexOf(':');
+        if (idx < 0) return false;
+        String modid = name.substring(0, idx);
+
+        String fullKey = name + ":" + meta;
+        String blockKey = name + ":*";
+        String modKey = modid + ":*";
+
+        return BLOCK_BLACKLIST.contains(fullKey) || BLOCK_BLACKLIST.contains(blockKey)
+                || BLOCK_BLACKLIST.contains(modKey);
     }
 
     /**
