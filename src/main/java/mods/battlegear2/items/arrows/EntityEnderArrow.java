@@ -162,13 +162,19 @@ public class EntityEnderArrow extends AbstractMBArrow {
     @Override
     public void onHitGround(int x, int y, int z) {
         this.setDead();
+        if (worldObj.isRemote) return;
+
         if (shootingEntity instanceof EntityPlayer player && shootingEntity.isSneaking()) {
             if (!worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops")) return;
+            if (!(player instanceof EntityPlayerMP playerMP)) return;
 
             Block block = worldObj.getBlock(x, y, z);
             int meta = worldObj.getBlockMetadata(x, y, z);
 
             if (!canHarvestBlock(worldObj, x, y, z, block, meta)) return;
+            if (ForgeHooks.onBlockBreakEvent(worldObj, playerMP.theItemInWorldManager.getGameType(), playerMP, x, y, z)
+                    .isCanceled())
+                return;
 
             ArrayList<ItemStack> drops = new ArrayList<>();
 
@@ -241,7 +247,7 @@ public class EntityEnderArrow extends AbstractMBArrow {
         Item item = Item.getItemFromBlock(block);
         if (item == null) return null;
 
-        return new ItemStack(item, 1, block.damageDropped(meta));
+        return new ItemStack(item, 1, item.getHasSubtypes() ? meta : 0);
     }
 
     private boolean canHarvestBlock(World world, int x, int y, int z, Block block, int meta) {
@@ -257,8 +263,7 @@ public class EntityEnderArrow extends AbstractMBArrow {
             return false;
         }
 
-        String key = Block.blockRegistry.getNameForObject(block) + ":" + meta;
-        return !BLOCK_BLACKLIST.contains(key);
+        return true;
     }
 
     private boolean isBlacklisted(Block block, int meta) {
