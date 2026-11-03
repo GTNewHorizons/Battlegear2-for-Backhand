@@ -128,8 +128,13 @@ public abstract class AbstractMBArrow extends EntityArrow {
      *
      * @return the stack to be picked up, if any
      */
+    @Override
     public ItemStack getPickedUpItem() {
-        return QuiverArrowRegistry.getItem(this.getClass());
+        int variant = getArrowVariant();
+        if (variant >= 0 && variant < ItemMBArrow.arrows.length) {
+            return new ItemStack(mods.battlegear2.utils.BattlegearConfig.MbArrows, 1, variant);
+        }
+        return super.getPickedUpItem();
     }
 
     public boolean canBreakBlocks() {
