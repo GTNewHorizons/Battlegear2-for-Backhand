@@ -153,16 +153,16 @@ public abstract class AbstractMBArrow extends EntityArrow {
     }
 
     @Override
-    public void writeEntityToNBT(NBTTagCompound tag) {
-        super.writeEntityToNBT(tag);
-        tag.setByte("ArrowVariant", (byte) this.arrowVariant);
+    public void func_70014_b(NBTTagCompound tag) {
+        super.func_70014_b(tag);
+        tag.func_74774_a("ArrowVariant", (byte) this.arrowVariant);
     }
 
     @Override
-    public void readEntityFromNBT(NBTTagCompound tag) {
-        super.readEntityFromNBT(tag);
-        if (tag.hasKey("ArrowVariant")) {
-            this.arrowVariant = tag.getByte("ArrowVariant");
+    public void func_70037_a(NBTTagCompound tag) {
+        super.func_70037_a(tag);
+        if (tag.func_150297_b("ArrowVariant", 99)) {
+            this.arrowVariant = tag.func_74771_c("ArrowVariant");
         }
     }
 }
