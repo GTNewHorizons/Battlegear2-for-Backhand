@@ -129,10 +129,6 @@ public abstract class AbstractMBArrow extends EntityArrow {
      * @return the stack to be picked up, if any
      */
     public ItemStack getPickedUpItem() {
-        int variant = getArrowVariant();
-        if (variant >= 0 && variant < ItemMBArrow.arrows.length) {
-            return new ItemStack(mods.battlegear2.utils.BattlegearConfig.MbArrows, 1, variant);
-        }
         return QuiverArrowRegistry.getItem(this.getClass());
     }
 
@@ -153,16 +149,16 @@ public abstract class AbstractMBArrow extends EntityArrow {
     }
 
     @Override
-    public void func_70014_b(NBTTagCompound tag) {
-        super.func_70014_b(tag);
-        tag.func_74774_a("ArrowVariant", (byte) this.arrowVariant);
+    public void writeEntityToNBT(NBTTagCompound tag) {
+        super.writeEntityToNBT(tag);
+        tag.setByte("ArrowVariant", (byte) this.arrowVariant);
     }
 
     @Override
-    public void func_70037_a(NBTTagCompound tag) {
-        super.func_70037_a(tag);
-        if (tag.func_150297_b("ArrowVariant", 99)) {
-            this.arrowVariant = tag.func_74771_c("ArrowVariant");
+    public void readEntityFromNBT(NBTTagCompound tag) {
+        super.readEntityFromNBT(tag);
+        if (tag.hasKey("ArrowVariant")) {
+            this.arrowVariant = tag.getByte("ArrowVariant");
         }
     }
 }
