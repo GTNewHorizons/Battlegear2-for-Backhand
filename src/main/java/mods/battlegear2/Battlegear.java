@@ -13,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 
 import baubles.api.expanded.BaubleExpandedSlots;
 import baubles.common.BaublesExpanded;
-
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState;
@@ -29,13 +28,21 @@ import cpw.mods.fml.common.network.NetworkCheckHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.relauncher.Side;
-import mods.battlegear2.items.ItemMBArrow;
-import mods.battlegear2.items.arrows.*;
 import mods.battlegear2.api.quiver.IArrowFireHandler;
 import mods.battlegear2.api.quiver.IQuiverSelection;
 import mods.battlegear2.api.quiver.QuiverArrowRegistry;
 import mods.battlegear2.api.weapons.WeaponRegistry;
 import mods.battlegear2.gui.BattlegearGUIHandeler;
+import mods.battlegear2.items.ItemMBArrow;
+import mods.battlegear2.items.arrows.EntityEnderArrow;
+import mods.battlegear2.items.arrows.EntityExplossiveArrow;
+import mods.battlegear2.items.arrows.EntityFlameArrow;
+import mods.battlegear2.items.arrows.EntityHolyArrow;
+import mods.battlegear2.items.arrows.EntityIceArrow;
+import mods.battlegear2.items.arrows.EntityLeechArrow;
+import mods.battlegear2.items.arrows.EntityLoveArrow;
+import mods.battlegear2.items.arrows.EntityPiercingArrow;
+import mods.battlegear2.items.arrows.EntityPoisonArrow;
 import mods.battlegear2.packet.BattlegearPacketHandeler;
 import mods.battlegear2.utils.BattlegearConfig;
 import mods.battlegear2.utils.ModCompat;
@@ -103,13 +110,11 @@ public class Battlegear {
         ModCompat.init(event);
 
         for (int i = 0; i < ItemMBArrow.arrows.length; i++) {
-        if (BattlegearConfig.MbArrows != null) {
-            QuiverArrowRegistry.addArrowToRegistry(
-                new ItemStack(BattlegearConfig.MbArrows, 1, i), 
-                ItemMBArrow.arrows[i]
-            );
+            if (BattlegearConfig.MbArrows != null) {
+                QuiverArrowRegistry
+                        .addArrowToRegistry(new ItemStack(BattlegearConfig.MbArrows, 1, i), ItemMBArrow.arrows[i]);
+            }
         }
-}
     }
 
     @Mod.EventHandler
