@@ -16,16 +16,16 @@ import net.minecraft.world.World;
 public class EntityIceArrow extends AbstractMBArrow {
 
     public EntityIceArrow(World par1World) {
-        super(par1World);
+        super(par1World, 1);
     }
 
     public EntityIceArrow(World par1World, EntityLivingBase par2EntityLivingBase, float par3) {
-        super(par1World, par2EntityLivingBase, par3);
+        super(par1World, par2EntityLivingBase, par3, 1);
     }
 
     public EntityIceArrow(World par1World, EntityLivingBase par2EntityLivingBase, EntityLivingBase par3EntityLivingBase,
             float par4, float par5) {
-        super(par1World, par2EntityLivingBase, par3EntityLivingBase, par4, par5);
+        super(par1World, par2EntityLivingBase, par3EntityLivingBase, par4, par5, 1);
     }
 
     @Override

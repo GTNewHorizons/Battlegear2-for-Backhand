@@ -35,16 +35,16 @@ public class EntityEnderArrow extends AbstractMBArrow {
     public static String PARTICLES = "portal", SOUND = "mob.endermen.portal";
 
     public EntityEnderArrow(World par1World) {
-        super(par1World);
+        super(par1World, 3);
     }
 
     public EntityEnderArrow(World par1World, EntityLivingBase par2EntityLivingBase, float par3) {
-        super(par1World, par2EntityLivingBase, par3);
+        super(par1World, par2EntityLivingBase, par3, 3);
     }
 
     public EntityEnderArrow(World par1World, EntityLivingBase par2EntityLivingBase,
             EntityLivingBase par3EntityLivingBase, float par4, float par5) {
-        super(par1World, par2EntityLivingBase, par3EntityLivingBase, par4, par5);
+        super(par1World, par2EntityLivingBase, par3EntityLivingBase, par4, par5, 3);
     }
 
     @Override
