@@ -41,6 +41,7 @@ import mods.battlegear2.utils.ModCompat;
         modid = Battlegear.MODID,
         name = "Mine & Blade Battlegear 2",
         version = Tags.VERSION,
+        dependencies = "after:dashboard@[1.0.2,)",
         guiFactory = "mods.battlegear2.gui.BattlegearGuiFactory")
 public class Battlegear {
 
