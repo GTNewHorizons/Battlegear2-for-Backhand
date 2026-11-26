@@ -15,16 +15,16 @@ import net.minecraft.world.World;
 public class EntityPoisonArrow extends AbstractMBArrow {
 
     public EntityPoisonArrow(World par1World) {
-        super(par1World);
+        super(par1World, 6);
     }
 
     public EntityPoisonArrow(World par1World, EntityLivingBase par2EntityLivingBase, float par3) {
-        super(par1World, par2EntityLivingBase, par3);
+        super(par1World, par2EntityLivingBase, par3, 6);
     }
 
     public EntityPoisonArrow(World par1World, EntityLivingBase par2EntityLivingBase,
             EntityLivingBase par3EntityLivingBase, float par4, float par5) {
-        super(par1World, par2EntityLivingBase, par3EntityLivingBase, par4, par5);
+        super(par1World, par2EntityLivingBase, par3EntityLivingBase, par4, par5, 6);
     }
 
     @Override

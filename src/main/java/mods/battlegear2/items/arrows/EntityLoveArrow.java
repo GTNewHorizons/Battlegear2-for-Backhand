@@ -22,16 +22,16 @@ public class EntityLoveArrow extends AbstractMBArrow {
     public static int AGE_TIMER = -24000, PICKUP_TIME = 10;
 
     public EntityLoveArrow(World world) {
-        super(world);
+        super(world, 7);
     }
 
     public EntityLoveArrow(World par1World, EntityLivingBase par2EntityLivingBase, float par3) {
-        super(par1World, par2EntityLivingBase, par3);
+        super(par1World, par2EntityLivingBase, par3, 7);
     }
 
     public EntityLoveArrow(World par1World, EntityLivingBase par2EntityLivingBase,
             EntityLivingBase par3EntityLivingBase, float par4, float par5) {
-        super(par1World, par2EntityLivingBase, par3EntityLivingBase, par4, par5);
+        super(par1World, par2EntityLivingBase, par3EntityLivingBase, par4, par5, 7);
     }
 
     @Override

@@ -8,6 +8,7 @@ import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
@@ -18,17 +19,20 @@ import xonin.backhand.api.core.BackhandUtils;
 
 public abstract class AbstractMBArrow extends EntityArrow {
 
-    public AbstractMBArrow(World par1World) {
+    public AbstractMBArrow(World par1World, int variant) {
         super(par1World);
+        this.arrowVariant = variant;
     }
 
-    public AbstractMBArrow(World par1World, EntityLivingBase par2EntityLivingBase, float par3) {
+    public AbstractMBArrow(World par1World, EntityLivingBase par2EntityLivingBase, float par3, int variant) {
         super(par1World, par2EntityLivingBase, par3);
+        this.arrowVariant = variant;
     }
 
     public AbstractMBArrow(World par1World, EntityLivingBase par2EntityLivingBase,
-            EntityLivingBase par3EntityLivingBase, float par4, float par5) {
+            EntityLivingBase par3EntityLivingBase, float par4, float par5, int variant) {
         super(par1World, par2EntityLivingBase, par3EntityLivingBase, par4, par5);
+        this.arrowVariant = variant;
     }
 
     public abstract boolean onHitEntity(Entity entityHit, DamageSource source, float ammount);
@@ -69,6 +73,7 @@ public abstract class AbstractMBArrow extends EntityArrow {
                                 skeleton.getAttackTarget(),
                                 1.6F,
                                 (float) (14 - skeleton.worldObj.difficultySetting.getDifficultyId() * 4));
+                mbArrow.setArrowVariant(type);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -130,5 +135,30 @@ public abstract class AbstractMBArrow extends EntityArrow {
     public boolean canBreakBlocks() {
         return !(this.shootingEntity instanceof EntityMob)
                 || this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
+    }
+
+    // Field to store the variant ID (0 to 8)
+    private int arrowVariant = 0;
+
+    public int getArrowVariant() {
+        return this.arrowVariant;
+    }
+
+    public void setArrowVariant(int variant) {
+        this.arrowVariant = variant;
+    }
+
+    @Override
+    public void writeEntityToNBT(NBTTagCompound tag) {
+        super.writeEntityToNBT(tag);
+        tag.setByte("ArrowVariant", (byte) this.arrowVariant);
+    }
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound tag) {
+        super.readEntityFromNBT(tag);
+        if (tag.hasKey("ArrowVariant")) {
+            this.arrowVariant = tag.getByte("ArrowVariant");
+        }
     }
 }

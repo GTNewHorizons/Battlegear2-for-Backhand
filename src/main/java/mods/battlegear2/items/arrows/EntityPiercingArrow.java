@@ -24,16 +24,16 @@ import net.minecraftforge.common.IShearable;
 public class EntityPiercingArrow extends AbstractMBArrow {
 
     public EntityPiercingArrow(World par1World) {
-        super(par1World);
+        super(par1World, 5);
     }
 
     public EntityPiercingArrow(World par1World, EntityLivingBase par2EntityLivingBase, float par3) {
-        super(par1World, par2EntityLivingBase, par3);
+        super(par1World, par2EntityLivingBase, par3, 5);
     }
 
     public EntityPiercingArrow(World par1World, EntityLivingBase par2EntityLivingBase,
             EntityLivingBase par3EntityLivingBase, float par4, float par5) {
-        super(par1World, par2EntityLivingBase, par3EntityLivingBase, par4, par5);
+        super(par1World, par2EntityLivingBase, par3EntityLivingBase, par4, par5, 5);
     }
 
     @Override

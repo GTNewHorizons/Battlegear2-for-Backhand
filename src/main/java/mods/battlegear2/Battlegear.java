@@ -26,12 +26,23 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkCheckHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.relauncher.Side;
 import mods.battlegear2.api.quiver.IArrowFireHandler;
 import mods.battlegear2.api.quiver.IQuiverSelection;
 import mods.battlegear2.api.quiver.QuiverArrowRegistry;
 import mods.battlegear2.api.weapons.WeaponRegistry;
 import mods.battlegear2.gui.BattlegearGUIHandeler;
+import mods.battlegear2.items.ItemMBArrow;
+import mods.battlegear2.items.arrows.EntityEnderArrow;
+import mods.battlegear2.items.arrows.EntityExplossiveArrow;
+import mods.battlegear2.items.arrows.EntityFlameArrow;
+import mods.battlegear2.items.arrows.EntityHolyArrow;
+import mods.battlegear2.items.arrows.EntityIceArrow;
+import mods.battlegear2.items.arrows.EntityLeechArrow;
+import mods.battlegear2.items.arrows.EntityLoveArrow;
+import mods.battlegear2.items.arrows.EntityPiercingArrow;
+import mods.battlegear2.items.arrows.EntityPoisonArrow;
 import mods.battlegear2.packet.BattlegearPacketHandeler;
 import mods.battlegear2.utils.BattlegearConfig;
 import mods.battlegear2.utils.ModCompat;
@@ -76,6 +87,17 @@ public class Battlegear {
         if (Loader.isModLoaded(BaublesExpanded.MODID)) {
             BaubleExpandedSlots.tryAssignSlotsUpToMinimum(BaubleExpandedSlots.quiverType, 1);
         }
+
+        int entityId = 0;
+        EntityRegistry.registerModEntity(EntityHolyArrow.class, "holyArrow", entityId++, this, 64, 20, true);
+        EntityRegistry.registerModEntity(EntityIceArrow.class, "iceArrow", entityId++, this, 64, 20, true);
+        EntityRegistry.registerModEntity(EntityExplossiveArrow.class, "explosiveArrow", entityId++, this, 64, 20, true);
+        EntityRegistry.registerModEntity(EntityEnderArrow.class, "enderArrow", entityId++, this, 64, 20, true);
+        EntityRegistry.registerModEntity(EntityFlameArrow.class, "flameArrow", entityId++, this, 64, 20, true);
+        EntityRegistry.registerModEntity(EntityPiercingArrow.class, "piercingArrow", entityId++, this, 64, 20, true);
+        EntityRegistry.registerModEntity(EntityPoisonArrow.class, "poisonArrow", entityId++, this, 64, 20, true);
+        EntityRegistry.registerModEntity(EntityLoveArrow.class, "loveArrow", entityId++, this, 64, 20, true);
+        EntityRegistry.registerModEntity(EntityLeechArrow.class, "leechArrow", entityId++, this, 64, 20, true);
     }
 
     @Mod.EventHandler
@@ -86,6 +108,13 @@ public class Battlegear {
         packetHandler.register();
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new BattlegearGUIHandeler());
         ModCompat.init(event);
+
+        for (int i = 0; i < ItemMBArrow.arrows.length; i++) {
+            if (BattlegearConfig.MbArrows != null) {
+                QuiverArrowRegistry
+                        .addArrowToRegistry(new ItemStack(BattlegearConfig.MbArrows, 1, i), ItemMBArrow.arrows[i]);
+            }
+        }
     }
 
     @Mod.EventHandler

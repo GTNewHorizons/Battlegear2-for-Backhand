@@ -42,7 +42,10 @@ public class ItemMBArrow extends Item {
         protected EntityArrow getArrowEntity(World world, ItemStack itemStack) {
             if (itemStack.getItemDamage() < arrows.length) {
                 try {
-                    return arrows[itemStack.getItemDamage()].getConstructor(World.class).newInstance(world);
+                    AbstractMBArrow arrow = arrows[itemStack.getItemDamage()].getConstructor(World.class)
+                            .newInstance(world);
+                    arrow.setArrowVariant(itemStack.getItemDamage());
+                    return arrow;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

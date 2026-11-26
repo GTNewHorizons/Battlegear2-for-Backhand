@@ -21,16 +21,16 @@ public class EntityLeechArrow extends AbstractMBArrow {
     public static float LEECH_FACTOR = 0.2F;
 
     public EntityLeechArrow(World par1World) {
-        super(par1World);
+        super(par1World, 8);
     }
 
     public EntityLeechArrow(World par1World, EntityLivingBase par2EntityLivingBase, float par3) {
-        super(par1World, par2EntityLivingBase, par3);
+        super(par1World, par2EntityLivingBase, par3, 8);
     }
 
     public EntityLeechArrow(World par1World, EntityLivingBase par2EntityLivingBase,
             EntityLivingBase par3EntityLivingBase, float par4, float par5) {
-        super(par1World, par2EntityLivingBase, par3EntityLivingBase, par4, par5);
+        super(par1World, par2EntityLivingBase, par3EntityLivingBase, par4, par5, 8);
     }
 
     @Override
