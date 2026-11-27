@@ -20,6 +20,7 @@ import mods.battlegear2.api.quiver.IArrowContainer2;
 import mods.battlegear2.api.quiver.QuiverArrowRegistry;
 import mods.battlegear2.api.shield.IShield;
 import mods.battlegear2.client.BattlegearClientTickHandeler;
+import mods.battlegear2.client.ClientProxy;
 import xonin.backhand.api.core.BackhandUtils;
 
 public class BattlegearInGameGUI extends Gui {
@@ -89,6 +90,7 @@ public class BattlegearInGameGUI extends Gui {
     }
 
     public void renderQuiverBar(ItemStack quiver, float frame, int xOffset, int yOffset) {
+        if (ClientProxy.dashboardLoaded && !DashboardHud.beginQuiver()) return;
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -114,9 +116,11 @@ public class BattlegearInGameGUI extends Gui {
         RenderHelper.disableStandardItemLighting();
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
         GL11.glDisable(GL11.GL_BLEND);
+        if (ClientProxy.dashboardLoaded) DashboardHud.endRender();
     }
 
     public void renderBlockBar(int x, int y) {
+        if (ClientProxy.dashboardLoaded && !DashboardHud.beginShieldBar()) return;
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -149,6 +153,7 @@ public class BattlegearInGameGUI extends Gui {
         this.drawTexturedModalRect(x, y, 0, 9, (int) (182 * BattlegearClientTickHandeler.getBlockTime()), 9);
 
         GL11.glDisable(GL11.GL_BLEND);
+        if (ClientProxy.dashboardLoaded) DashboardHud.endRender();
     }
 
     private void renderStackAt(int x, int y, ItemStack itemstack, float frame) {

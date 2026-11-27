@@ -23,12 +23,14 @@ import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 import cpw.mods.fml.common.registry.GameData;
 import mods.battlegear2.Battlegear;
 import mods.battlegear2.CommonProxy;
 import mods.battlegear2.api.heraldry.IHeraldryItem;
 import mods.battlegear2.api.shield.IShield;
+import mods.battlegear2.client.gui.DashboardHud;
 import mods.battlegear2.client.renderer.BowRenderer;
 import mods.battlegear2.client.renderer.BowRendererDiamond;
 import mods.battlegear2.client.renderer.BowRendererIron;
@@ -49,6 +51,7 @@ import xonin.backhand.api.core.BackhandUtils;
 public final class ClientProxy extends CommonProxy {
 
     public static boolean tconstructEnabled = false;
+    public static boolean dashboardLoaded = false;
     public static IIcon[] backgroundIcon, bowIcons, bowIronIcons, bowDiamondIcons, bowGoldIcons; // bowGregIcons,;
 
     @Override
@@ -56,6 +59,9 @@ public final class ClientProxy extends CommonProxy {
         super.registerTickHandelers();
         MinecraftForge.EVENT_BUS.register(BattlegearClientEvents.INSTANCE);
         FMLCommonHandler.instance().bus().register(BattlegearClientTickHandeler.INSTANCE);
+
+        dashboardLoaded = Loader.isModLoaded("dashboard");
+        if (dashboardLoaded) DashboardHud.register();
     }
 
     @Override
